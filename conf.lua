@@ -1,6 +1,17 @@
-local table = {
-  "doodle", "bob", "dingus"
-}
+local gameTitle = "Vale"
+
+local generateTitle = function(gameTitle)
+  local time = os.time()
+  math.randomseed(time)
+  local table = {
+    "doodle",
+    "bob",
+    "dingus"
+  }
+  local index = math.random(3)
+  return gameTitle .. ": " .. table[index]
+end
+
 function love.conf(t)
   t.identity = nil                    -- The name of the save directory (string)
   t.version = "0.10.1"                -- The LÖVE version this game was made for (string)
@@ -9,7 +20,7 @@ function love.conf(t)
   t.externalstorage = false           -- True to save files (and read from the save directory) in external storage on Android (boolean)
   t.gammacorrect = false              -- Enable gamma-correct rendering, when supported by the system (boolean)
 
-  t.window.title = "Vale: " .. table[math.random(3)]           -- The window title (string)
+  t.window.title = generateTitle(gameTitle)    -- The window title (string)
   t.window.icon = nil                 -- Filepath to an image to use as the window's icon (string)
   t.window.width = 800                -- The window width (number)
   t.window.height = 600               -- The window height (number)
