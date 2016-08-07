@@ -4,12 +4,12 @@ local Love = require 'src/services/love'
 -- Information about sprites we need to create
 local sprite_maps = {}
 
-sprite_maps.knight = {
-  path = 'img/dungeon.png',
-  width = 24,
-  height = 24,
-  x = 180,
-  y = 183
+sprite_maps.protagonist = {
+  path = 'img/male-player.png',
+  width = 64,
+  height = 64,
+  x = 0,
+  y = 128
 }
 
 -- Example animated sprite

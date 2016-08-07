@@ -2,7 +2,7 @@ local Love = require 'src/services/love'
 local Sprite = require 'src/services/sprite'
 local World = require 'src/services/world'
 
-local name = 'knight'
+local name = 'protagonist'
 
 local body = Love.physics.newBody(World, 0, 0, 'dynamic')
 body:setFixedRotation(true)

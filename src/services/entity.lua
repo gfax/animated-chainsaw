@@ -1,5 +1,5 @@
 local list = {
-  require 'src/entities/knight'
+  require 'src/entities/protagonist'
 }
 
 return {
