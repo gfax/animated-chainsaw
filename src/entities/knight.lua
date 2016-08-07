@@ -31,7 +31,7 @@ local entity = {
   max_speed = 100,
   player_id = 1,
   shape = shape,
-  sprite = Sprite.list[name].image,
+  sprite = Sprite.list[name],
 }
 
 return entity

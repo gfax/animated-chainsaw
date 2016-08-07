@@ -4,20 +4,12 @@ local Love = require 'src/services/love'
 -- Information about sprites we need to create
 local sprite_maps = {}
 
---sprite_maps.knight = {
-  --path = 'img/countryside.png',
-  --width = 32,
-  --height = 32,
-  --x = 0,
-  --y = 0
---}
-
 sprite_maps.knight = {
   path = 'img/dungeon.png',
   width = 24,
   height = 24,
-  x = 11,
-  y = 12
+  x = 180,
+  y = 183
 }
 
 -- Example animated sprite
@@ -31,6 +23,34 @@ sprite_maps.knight = {
   --y = 0
 --}
 
+local build_animation = function(map, image)
+  local frame_w = map.width
+  local frame_h = map.height
+
+  local img_w = image:getWidth()
+  local img_h = image:getHeight()
+
+  local x = map.x or 0
+  local y = map.y or 0
+  local gap = map.gap or 0
+
+  local grid = Anim8.newGrid(frame_w, frame_h, img_w, img_h, x, y, gap)
+
+  local frames = map.frames
+  local duration = map.duration
+
+  return Anim8.newAnimation(grid(frames, 1), duration)
+end
+
+local build_quad = function(map, image)
+  local img_w = image:getWidth()
+  local img_h = image:getHeight()
+
+  local x = map.x or 0
+  local y = map.y or 0
+
+  return Love.graphics.newQuad(x, y, map.width, map.height, img_w, img_h)
+end
 
 local build_sprites = function(maps)
   local sprites = {}
@@ -42,23 +62,9 @@ local build_sprites = function(maps)
     sprites[key].image = image
 
     if (map.duration) then
-      local frame_w = map.width
-      local frame_h = map.height
-
-      local img_w = image:getWidth()
-      local img_h = image:getHeight()
-
-      local x = map.x or 0
-      local y = map.y or 0
-      local gap = map.gap or 0
-
-      local grid = Anim8.newGrid(frame_w, frame_h, img_w, img_h, x, y, gap)
-
-      local frames = map.frames
-      local duration = map.duration
-
-      local animation = Anim8.newAnimation(grid(frames, 1), duration)
-      sprites[key].animation = animation
+      sprites[key].animation = build_animation(map, image)
+    else
+      sprites[key].quad = build_quad(map, image)
     end
   end
   return sprites

@@ -6,40 +6,44 @@ local System = require 'lib/system'
 
 local components = {
   'body',
-  'shape',
-  '?animation',
-  '?polygon',
-  '?sprite'
+  'sprite',
+  '?shape'
 }
 
-local system = function(body, shape, animation, polygon, sprite)
-  if animation then
-    --animation:draw(entity.sprite, entity.position.x, entity.position.y)
-    animation:draw(
-      sprite,
-      body:getX(),
-      body:getY(),
-      body:getAngle()
-    )
-    Love.graphics.setColor(160, 72, 14, 255)
-    Love.graphics.polygon(
-      'fill',
-      body:getWorldPoints(shape:getPoints())
-    )
-  elseif polygon then
-    Love.graphics.setColor(72, 160, 14, 255)
-    Love.graphics.polygon(
-      'fill',
-      body:getWorldPoints(shape:getPoints())
-    )
-  elseif sprite then
-    Love.graphics.draw(
-      sprite,
-      body:getX(),
-      body:getY(),
-      body:getAngle()
-    )
+local draw_animation = function(body, sprite)
+  sprite.animation:draw(
+    sprite.animation,
+    body:getX(),
+    body:getY(),
+    body:getAngle()
+  )
+end
+
+local draw_quad = function(body, sprite)
+  Love.graphics.draw(
+    sprite.image,
+    sprite.quad,
+    body:getX(),
+    body:getY(),
+    body:getAngle()
+  )
+end
+
+local system = function(body, sprite)
+  if sprite.animation then
+    draw_animation(body, sprite)
+  else
+    draw_quad(body, sprite)
   end
+
+  -- testing
+  --if shape then
+    --Love.graphics.setColor(160, 72, 14, 255)
+    --Love.graphics.polygon(
+      --'fill',
+      --body:getWorldPoints(shape:getPoints())
+    --)
+  --end
 end
 
 return System(components, system)
