@@ -1,14 +1,32 @@
 -- -*- mode: lua; -*- vim: set syntax=lua:
 
--- Base globals, 'min' is the intersection of globals
--- common between Lua 5.1, Lua 5.2 and LuaJIT 2.0.
-std = 'min'
+-- https://github.com/mpeterv/luacheck/blob/master/src/luacheck/stds.lua
+std = 'lua51'
 
 -- Ignore libs as we aren't accountable for those
 exclude_files = { 'lib/*.*' }
 
 -- Ignore non-standard lua love behavior just right here
-files['src/services/love.lua'] = { globals = { 'love' } }
+files['conf.lua'] = {
+  globals = {
+    'love'
+  }
+}
+files['src/services/love.lua'] = {
+  globals = {
+    'love'
+  }
+}
+-- Ignore busted spec file globals
+files['src/*/*.spec.lua'] = {
+  globals = {
+    'before_each',
+    'describe',
+    'mock',
+    'spy',
+    'it'
+  }
+}
 
 -- List of allowed globals
 globals = {}
