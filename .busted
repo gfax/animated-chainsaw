@@ -2,6 +2,7 @@ return {
   default = {
     coverage = true,
     loaders = { 'lua' },
+    output = 'utfTerminal',
     pattern = '.spec.lua',
     verbose = true
   }
