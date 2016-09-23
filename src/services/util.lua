@@ -1,3 +1,6 @@
+--- Util service
+-- Miscellaneous, general-purpose helper functions
+
 local copy
 copy = function(orig)
   -- Primitive types: number, string, boolean, etc
@@ -12,6 +15,15 @@ copy = function(orig)
   return new_table
 end
 
+local push = function(t, ...)
+  local n = select('#', ...)
+  for i = 1, n do
+    t[#t + 1] = select(i, ...)
+  end
+  return ...
+end
+
 return {
-  copy = copy
+  copy = copy,
+  push = push
 }

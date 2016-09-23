@@ -16,6 +16,7 @@ RUN pip install cpp-coveralls
 ## Luarocks
 RUN luarocks install busted 2.0.rc12-1
 RUN luarocks install luacheck
+RUN luarocks install luacov
 RUN luarocks install luacov-coveralls
 
 ## App setup

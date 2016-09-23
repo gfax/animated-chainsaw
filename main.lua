@@ -7,24 +7,22 @@ local World = require 'src/services/world'
 
 -- Services
 local Love = require 'src/services/love'
-local Background = require 'src/services/background'
 local Entity = require 'src/services/entity'
+local Map = require 'src/services/map'
 
 -- Systems
-local DrawBackground = require 'src/systems/draw-background'
 local DrawEntity = require 'src/systems/draw-entity'
-local LoadBackground = require 'src/systems/load-background'
 local UpdateEntityAnimation = require 'src/systems/update-entity-animation'
 --local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
 
 -- Functions to initialize on game boot
 function Love.load()
-  LoadBackground(Background.list)
+  Map.load('general')
 end
 
 -- Functions to run on re-draw
 function Love.draw()
-  DrawBackground(Background.list)
+  Map.draw()
   DrawEntity(Entity.list)
 end
 

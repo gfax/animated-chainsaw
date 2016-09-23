@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="general" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+  <image source="../../img/general.png" trans="ffffff" width="512" height="512"/>
+ </tileset>
+ <layer name="My base layer" width="2" height="2">
+  <data encoding="csv">
+164,164,
+164,161
+</data>
+ </layer>
+</map>

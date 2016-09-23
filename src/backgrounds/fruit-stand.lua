@@ -25,7 +25,7 @@ local quad_map = {
 }
 
 return {
-  active = true,
+  active = false,
   background_string = background_string,
   image_path = image_path,
   quad_map = quad_map,

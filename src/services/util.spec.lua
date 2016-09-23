@@ -57,4 +57,30 @@ describe('services/util', function()
     end)
   end)
 
+  describe('push', function()
+    it('should modify the given table', function()
+      local t = { 1, 2 }
+      Util.push(t, 3)
+      assert.equal(t[1], 1)
+      assert.equal(t[2], 2)
+      assert.equal(t[3], 3)
+    end)
+
+    it('should accept a list of elements to push', function()
+      local t = { 1 }
+      Util.push(t, 2, 3)
+      assert.equal(t[1], 1)
+      assert.equal(t[2], 2)
+      assert.equal(t[3], 3)
+    end)
+
+    it('should ignore nil values', function()
+      local t = { 1 }
+      Util.push(t, nil, 2)
+      assert.equal(t[1], 1)
+      assert.equal(t[2], 2)
+      assert.equal(t[3], nil)
+    end)
+  end)
+
 end)

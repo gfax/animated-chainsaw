@@ -20,9 +20,12 @@ files['src/services/love.lua'] = {
 -- Ignore busted spec file globals
 files['src/*/*.spec.lua'] = {
   globals = {
+    'after_each',
     'before_each',
     'describe',
+    'match',
     'mock',
+    'stub',
     'spy',
     'it'
   }
