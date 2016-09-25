@@ -4,9 +4,8 @@
   <image source="../../img/general.png" trans="ffffff" width="512" height="512"/>
  </tileset>
  <layer name="My base layer" width="2" height="2">
-  <data encoding="csv">
-164,164,
-164,161
-</data>
+  <data encoding="base64" compression="zlib">
+   eJxbwsDAsASKFwIxABmkAo4=
+  </data>
  </layer>
 </map>

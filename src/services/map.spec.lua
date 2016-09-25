@@ -191,8 +191,6 @@ describe('services/map', function()
       assert.equal(results.layers[1].data[4], 18)
       assert.equal(results.orientation, 'orthogonal')
       assert.equal(#results.quads, 256)
-      --local inspect = require 'lib/inspect'
-      --print(inspect(results.quads))
       assert.equal(results.render_order, 'right-down')
       assert.equal(results.rows, 2)
       assert.equal(results.tile_height, 32)
@@ -265,8 +263,6 @@ describe('services/map', function()
       package.loaded['src/services/xml'] = xml_mock
 
       local results = Map.load('foo')
-      local inspect = require 'lib/inspect'
-      print(inspect(results))
       assert.equal(results.columns, 2)
       assert.equal(type(results.image), 'table')
       assert.equal(#results.layers, 1)

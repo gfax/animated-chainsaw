@@ -1,7 +1,7 @@
 --- Map service
 -- Store and decode maps as needed
 
---local Base64 = require 'src/services/base64'
+local Base64 = require 'src/services/base64'
 local Love = require 'src/services/love'
 local Xml = require 'src/services/xml'
 local Util = require 'src/services/util'
@@ -19,6 +19,9 @@ local Util = require 'src/services/util'
 --       x = 0,
 --       y = 0
 --     }
+--   },
+--   object_groups = {
+--     { ... }
 --   },
 --   orientation = "orthogonal",
 --   quads = { <love quad>, <love quad>, ... },
@@ -58,6 +61,7 @@ local get_map_tables = function(map_directory, map_file_ext)
 
   local parse_layer = function(raw_layer_data, error_suffix)
     local formatted_layer = {}
+    formatted_layer.data = {}
     formatted_layer.height = raw_layer_data.xarg.height
     formatted_layer.width = raw_layer_data.xarg.width
     formatted_layer.pos_x = (raw_layer_data.xarg.x or 0)
@@ -66,38 +70,50 @@ local get_map_tables = function(map_directory, map_file_ext)
     if not raw_layer_data[1].xarg.encoding then
       formatted_layer.data = parse_layer_data_xml(raw_layer_data[1])
     elseif raw_layer_data[1].xarg.encoding == 'base64' then
-      --local tile_data = raw_layer_data[1][1]
-      --tile_data = tile_data:gsub('%s+', '')
-      --local inspect = require 'lib/inspect'
-      --print(inspect(tile_data))
-      --tile_data = Base64.decode(tile_data)
-      --print(tile_data)
-      assert(
-        false,
-        'For Tiled maps, set the layer format to "XML".' ..
-        'Other encodings not yet supported. Error' .. error_suffix
-      )
+      local tile_data_string = raw_layer_data[1][1]
+      -- Strip newlines and whitespaces
+      tile_data_string = tile_data_string:gsub('%s+', '')
+      tile_data_string = Base64.decode(tile_data_string)
 
-      --local compression = raw_layer_data[1].xarg.compression
-      --if not compression then
-        --formatted_layer.data = tile_data
-      --elseif compression == 'gzip' or compression == 'zlib' then
-        --print(type(Love.math.decompress(tile_data, compression)))
-        --formatted_layer.data = Love.math.decompress(tile_data, compression)
-      --else
-        --assert(
-          --false,
-          --'Only zlib and gzip map compressions are supported.' ..
-          --'Found "' .. compression .. '"' .. error_suffix
-        --)
-      --end
+      local compression = raw_layer_data[1].xarg.compression
+      if not compression then
+        for i = 1, #tile_data_string, 4 do
+          table.insert(formatted_layer.data, string.byte(tile_data_string, i))
+        end
+      elseif compression == 'gzip' or compression == 'zlib' then
+        tile_data_string = Love.math.decompress(tile_data_string, compression)
+        -- Glue together an integer from four bytes. Little endian
+        formatted_layer.data = {}
+        -- Decimal values for binary digits
+        local bin = {}
+        local mult = 1
+        for i = 1, 40 do
+            bin[i] = mult
+            mult = mult * 2
+        end
+        for i = 1, #tile_data_string, 4 do
+          -- Glue together an integer from four bytes. Little endian
+          local int = string.byte(tile_data_string, i) % bin[9] +
+            string.byte(tile_data_string, i + 1) % bin[9] * bin[9] +
+            string.byte(tile_data_string, i + 2) % bin[9] * bin[17] +
+            string.byte(tile_data_string, i + 3) % bin[9] * bin[25]
+          formatted_layer.data[#formatted_layer.data + 1] = int
+        end
+      else
+        assert(
+          false,
+          'Only zlib and gzip map compressions are supported.' ..
+          'Found "' .. compression .. '"' .. error_suffix
+        )
+      end
     elseif raw_layer_data[1].xarg.encoding == 'csv' then
       formatted_layer.data = parse_layer_data_csv(raw_layer_data[1])
     else
       assert(
         false,
-        'Tiled layer formats should be set to "XML". ' ..
-        'Unexpected format found' .. error_suffix
+        'Unexpected Tiled layer encoding "' ..
+        raw_layer_data[1].xarg.encoding ..
+        '" set' .. error_suffix
       )
     end
     return formatted_layer
