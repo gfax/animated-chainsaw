@@ -6,17 +6,20 @@ local World = require 'src/services/world'
 -- Libs
 
 -- Services
-local Love = require 'src/services/love'
 local Entity = require 'src/services/entity'
+local Input = require 'src/services/input'
+local InputConfig = require 'src/services/input-config'
+local Love = require 'src/services/love'
 local Map = require 'src/services/map'
 
 -- Systems
 local DrawEntity = require 'src/systems/draw-entity'
 local UpdateEntityAnimation = require 'src/systems/update-entity-animation'
---local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
+local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
 
 -- Functions to initialize on game boot
 function Love.load()
+  InputConfig.update()
   Map.load('general')
 end
 
@@ -28,18 +31,20 @@ end
 
 -- All active callbacks for pressing a key
 -- pressedKey (string)
-function Love.keypressed()
+function Love.keypressed(pressed_key)
+  Input.call_key_press(pressed_key)
 end
 
 -- All active callbacks for releasing a key
 -- releasedKey (string)
-function Love.keyreleased()
+function Love.keyreleased(released_key)
+  Input.call_key_release(released_key)
 end
 
 -- Calculations to re-run on going through another loop
 -- dt (integer) delta time (in seconds)
 function Love.update(dt)
   UpdateEntityAnimation(Entity.list, dt)
-  --UpdatePlayerVelocity(Entity.list)
+  UpdatePlayerVelocity(Entity.list)
   World:update(dt)
 end
