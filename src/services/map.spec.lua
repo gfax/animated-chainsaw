@@ -62,20 +62,7 @@ describe('services/map', function()
     package.loaded['src/services/love'] = nil
   end)
 
-  ---- Mock Util dependency
-  --before_each(function()
-    --local util_mock = {
-      --copy = function(thing)
-        --return thing
-      --end
-    --}
-    --package.loaded['src/services/util'] = util_mock
-  --end)
-  --after_each(function()
-    --package.loaded['src/services/util'] = nil
-  --end)
-
-  -- Reload main service between tests to wipe states
+  -- Reload stateful services between tests
   before_each(function()
     Map = require 'src/services/map'
   end)
@@ -95,197 +82,45 @@ describe('services/map', function()
       end)
     end)
 
-    it('should parse maps with xml-format tilesets', function()
-      local xml_mock = {
+    it('should load images and quads from parsed tmx content', function()
+      local tmx_mock = {
         parse = function()
-          local parsed_xml = {
-            '        <?xml version="1.0" encoding="UTF-8"?>\n        ',
-            {
+          return {
+            columns = 2,
+            layers = {
               {
-                {
-                  empty = 1,
-                  label = 'image',
-                  xarg = {
-                    height = '512',
-                    source = '../../img/general.png',
-                    trans = 'ffffff',
-                    width = '512'
-                  }
-                },
-                label = 'tileset',
-                xarg = {
-                  columns = '16',
-                  firstgid = '1',
-                  name = 'general',
-                  tilecount = '256',
-                  tileheight = '32',
-                  tilewidth = '32'
-                }
-              },
-              {
-                {
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '1'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '2'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '17'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '18'
-                    }
-                  },
-                  label = 'data',
-                  xarg = {}
-                },
-                label = 'layer',
-                xarg = {
-                  height = '2',
-                  name = 'Tile Layer 1',
-                  width = '2'
-                }
-              },
-              label = 'map',
-              xarg = {
+                data = { 1, 2, 17, 18 },
                 height = '2',
-                nextobjectid = '1',
-                orientation = 'orthogonal',
-                renderorder = 'right-down',
-                tileheight = '32',
-                tilewidth = '32',
-                version = '1.0',
+                pos_x = 0,
+                pos_y = 0,
                 width = '2'
               }
+            },
+            object_groups = {},
+            orientation = 'orthogonal',
+            render_order = 'right-down',
+            rows = 2,
+            tile_height = 32,
+            tile_width = 32,
+            tileset = {
+              columns = 16,
+              source = 'img/general.png',
+              tile_count = 256,
+              tile_height = 32,
+              tile_width = 32,
+              transparency = 'ffffff'
             }
           }
-          return parsed_xml
         end
       }
-      package.loaded['src/services/xml'] = xml_mock
+      package.loaded['src/services/tmx'] = tmx_mock
 
       local results = Map.load('foo')
       assert.equal(results.columns, 2)
       assert.equal(type(results.image), 'table')
-      assert.equal(#results.layers, 1)
-      assert.equal(#results.layers[1].data, 4)
-      assert.equal(results.layers[1].data[1], 1)
-      assert.equal(results.layers[1].data[2], 2)
-      assert.equal(results.layers[1].data[3], 17)
-      assert.equal(results.layers[1].data[4], 18)
-      assert.equal(results.orientation, 'orthogonal')
       assert.equal(#results.quads, 256)
-      assert.equal(results.render_order, 'right-down')
-      assert.equal(results.rows, 2)
-      assert.equal(results.tile_height, 32)
-      assert.equal(results.tile_width, 32)
-      assert.equal(type(results.tileset), 'table')
-      assert.equal(results.tileset.columns, 16)
-      assert.equal(results.tileset.source, 'img/general.png')
-      assert.equal(results.tileset.tile_count, 256)
-      assert.equal(results.tileset.tile_height, 32)
-      assert.equal(results.tileset.tile_width, 32)
-      assert.equal(results.tileset.transparency, 'ffffff')
 
-      package.loaded['src/services/xml'] = nil
-    end)
-
-    it('should parse maps with csv-format tilesets', function()
-      local xml_mock = {
-        parse = function()
-          local parsed_xml = {
-            {
-              {
-                empty = 1,
-                label = 'image',
-                xarg = {
-                  height = '512',
-                  source = '../../img/general.png',
-                  trans = 'ffffff',
-                  width = '512'
-                }
-              },
-              label = 'tileset',
-              xarg = {
-                columns = '16',
-                firstgid = '1',
-                name = 'general',
-                tilecount = '256',
-                tileheight = '32',
-                tilewidth = '32'
-              }
-            },
-            {
-              { '\n164,164,\n164,161\n',
-                label = 'data',
-                xarg = {
-                  encoding = 'csv'
-                }
-              },
-              label = 'layer',
-              xarg = {
-                height = '2',
-                name = 'My base layer',
-                width = '2'
-              }
-            },
-            label = 'map',
-            xarg = {
-              height = '2',
-              nextobjectid = '1',
-              orientation = 'orthogonal',
-              renderorder = 'right-down',
-              tileheight = '32',
-              tilewidth = '32',
-              version = '1.0',
-              width = '2'
-            }
-          }
-          return parsed_xml
-        end
-      }
-      package.loaded['src/services/xml'] = xml_mock
-
-      local results = Map.load('foo')
-      assert.equal(results.columns, 2)
-      assert.equal(type(results.image), 'table')
-      assert.equal(#results.layers, 1)
-      assert.equal(#results.layers[1].data, 4)
-      assert.equal(results.layers[1].data[1], 1)
-      assert.equal(results.layers[1].data[2], 2)
-      assert.equal(results.layers[1].data[3], 17)
-      assert.equal(results.layers[1].data[4], 18)
-      assert.equal(results.orientation, 'orthogonal')
-      assert.equal(#results.quads, 256)
-      assert.equal(results.render_order, 'right-down')
-      assert.equal(results.rows, 2)
-      assert.equal(results.tile_height, 32)
-      assert.equal(results.tile_width, 32)
-      assert.equal(type(results.tileset), 'table')
-      assert.equal(results.tileset.columns, 16)
-      assert.equal(results.tileset.source, 'img/general.png')
-      assert.equal(results.tileset.tile_count, 256)
-      assert.equal(results.tileset.tile_height, 32)
-      assert.equal(results.tileset.tile_width, 32)
-      assert.equal(results.tileset.transparency, 'ffffff')
-
-      package.loaded['src/services/xml'] = nil
+      package.loaded['src/services/tmx'] = nil
     end)
   end)
 
