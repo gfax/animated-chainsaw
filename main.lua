@@ -1,16 +1,15 @@
 --- This is the main Love file, containing all the pieces of the game loop.
 
--- Load world before anything else.
-local World = require 'src/services/world'
-
 -- Libs
 
 -- Services
+local Args = require 'src/services/args'
 local Entity = require 'src/services/entity'
 local Input = require 'src/services/input'
 local InputConfig = require 'src/services/input-config'
 local Love = require 'src/services/love'
 local Map = require 'src/services/map'
+local World = require 'src/services/world'
 
 -- Systems
 local DrawEntity = require 'src/systems/draw-entity'
@@ -18,7 +17,8 @@ local UpdateEntityAnimation = require 'src/systems/update-entity-animation'
 local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
 
 -- Functions to initialize on game boot
-function Love.load()
+function Love.load(args)
+  Args.load(args)
   InputConfig.update()
   Map.load('general')
 end

@@ -1,9 +1,11 @@
 --- Map service
 -- Store and decode maps as needed
 
+local Args = require 'src/services/args'
 local Love = require 'src/services/love'
 local Tmx = require 'src/services/tmx'
 local Util = require 'src/services/util'
+local World = require 'src/services/world'
 
 -- Creates table of map filenames as keys
 -- and their contents as parsed tables:
@@ -34,7 +36,7 @@ local maps = get_map_tables(map_directory, map_file_ext)
 
 local draw = function()
   local map = active_map
-
+  -- Draw layers
   for _, layer in ipairs(map.layers) do
     for i, tile in ipairs(layer.data) do
       -- Skip unset tiles
@@ -48,6 +50,16 @@ local draw = function()
           tile_pos_y
         )
       end
+    end
+  end
+  if Args.get_arg('debug') then
+    for _, fixture in ipairs(map.fixtures) do
+      local body = fixture:getBody()
+      local shape = fixture:getShape()
+      Love.graphics.setColor(255, 0, 0, 255)
+      Love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
+      Love.graphics.setColor(255, 255, 255, 255)
+      --Love.graphics.setColor(255, 255, 255, 255)
     end
   end
 end
@@ -82,6 +94,34 @@ local load = function(map_name)
     return quads
   end
 
+  local load_fixtures = function(map)
+    local fixtures = {}
+    -- Apply collision
+    for _, object_group in ipairs(map.object_groups) do
+      for _, object in ipairs(object_group) do
+        local body = Love.physics.newBody(
+          World,
+          object.pos_x,
+          object.pos_y,
+          'static'
+        )
+        local shape
+        if object.points then
+          shape = Love.physics.newPolygonShape(object.points)
+        else
+          shape = Love.physics.newRectangleShape(
+            object.width / 2,
+            object.height / 2,
+            object.width,
+            object.height
+          )
+        end
+        table.insert(fixtures, Love.physics.newFixture(body, shape))
+      end
+    end
+    return fixtures
+  end
+
   assert(
     type(map_name) == 'string',
     'Expected map_name string parameter. Got "' .. type(map_name) .. '".'
@@ -93,6 +133,7 @@ local load = function(map_name)
   )
   active_map.image = load_image(active_map)
   active_map.quads = load_quads(active_map, active_map.image)
+  active_map.fixtures = load_fixtures(active_map)
 
   return active_map
 end

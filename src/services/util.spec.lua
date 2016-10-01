@@ -7,6 +7,10 @@ describe('services/util', function()
   end)
 
   describe('copy', function()
+    it('should exist', function()
+      assert(type(Util.copy), 'function')
+    end)
+
     it('should return copies of tables with keys', function()
       local a = { foo = 'bar' }
       local b = a
@@ -58,6 +62,10 @@ describe('services/util', function()
   end)
 
   describe('push', function()
+    it('should exist', function()
+      assert(type(Util.push), 'function')
+    end)
+
     it('should modify the given table', function()
       local t = { 1, 2 }
       Util.push(t, 3)
@@ -80,6 +88,43 @@ describe('services/util', function()
       assert.equal(t[1], 1)
       assert.equal(t[2], 2)
       assert.equal(t[3], nil)
+    end)
+  end)
+
+  describe('split', function()
+    it('should exist', function()
+      assert(type(Util.copy), 'function')
+    end)
+
+    it('should split a string with the given separator', function()
+      local str = 'foo-bar-baz'
+      local expectation = { 'foo', 'bar', 'baz' }
+      assert.same(Util.split(str, '-'), expectation)
+      str = 'foo bar baz'
+      assert.same(Util.split(str, ' '), expectation)
+      str = 'foo%bar%baz'
+      assert.same(Util.split(str, '%'), expectation)
+      str = 'foo$bar$baz'
+      assert.same(Util.split(str, '$'), expectation)
+    end)
+
+    it('should split a string with a multi-character separator', function()
+      local str = 'foo%%%bar%%%baz'
+      local expectation = { 'foo', 'bar', 'baz' }
+      assert.same(Util.split(str, '%%%'), expectation)
+    end)
+
+    it('should default to a whitespace separator if none is given', function()
+      local str = 'foo bar baz'
+      local expectation = { 'foo', 'bar', 'baz' }
+      assert.same(Util.split(str), expectation)
+    end)
+
+    it('should assert that the separator is at least one character', function()
+      local str = 'foo bar baz'
+      assert.errors(function()
+        Util.split(str, '')
+      end)
     end)
   end)
 

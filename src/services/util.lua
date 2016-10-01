@@ -23,7 +23,28 @@ local push = function(t, ...)
   return ...
 end
 
+local split = function (str, sep)
+  local array = function(...)
+    local t = {}
+    for x in ... do
+      t[#t + 1] = x
+    end
+    return t
+  end
+  local patternescape = function(s)
+    return s:gsub('[%(%)%.%%%+%-%*%?%[%]%^%$]', '%%%1')
+  end
+  if not sep then
+    return array(str:gmatch('([%S]+)'))
+  else
+    assert(sep ~= '', 'empty separator')
+    local psep = patternescape(sep)
+    return array((str..sep):gmatch('(.-)(' .. psep .. ')'))
+  end
+end
+
 return {
   copy = copy,
-  push = push
+  push = push,
+  split = split
 }

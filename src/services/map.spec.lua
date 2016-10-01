@@ -1,14 +1,14 @@
 describe('services/map', function()
 
   local Love
-  local Map
+  local path = 'src/services/map'
 
   -- Mock Love dependency
   before_each(function()
     local love_mock = {
       filesystem = {
         getDirectoryItems = function()
-          return { 'foo.tmx', 'foo.bar' }
+          return { 'foo.tmx', 'foo.bar', 'tmx.fake' }
         end,
         read = function()
           local test_tmx = [[
@@ -43,15 +43,36 @@ describe('services/map', function()
             end
           }
         end,
-        newQuad = function(tile_x, tile_y, tile_w, tile_h, img_w, img_h)
+        newQuad = function()
+        end,
+        polygon = function()
+          return true
+        end,
+        setColor = function()
+          return true
+        end
+      },
+      physics = {
+        newBody = function()
+          return 'body'
+        end,
+        newFixture = function(body, shape)
           return {
-            tile_x = tile_x,
-            tile_y = tile_y,
-            tile_w = tile_w,
-            tile_h = tile_h,
-            img_w = img_w,
-            img_h = img_h
+            body = body,
+            getBody = function()
+              return body
+            end,
+            getShape = function()
+              return shape
+            end,
+            shape = shape
           }
+        end,
+        newPolygonShape = function()
+          return 'polygon'
+        end,
+        newRectangleShape = function()
+          return 'rectangle'
         end
       }
     }
@@ -62,27 +83,46 @@ describe('services/map', function()
     package.loaded['src/services/love'] = nil
   end)
 
-  -- Reload stateful services between tests
+  -- Mock World dependency
   before_each(function()
-    Map = require 'src/services/map'
+    local world_mock = {}
+    package.loaded['src/services/world'] = world_mock
   end)
   after_each(function()
-    Map = nil
+    package.loaded['src/services/world'] = nil
+  end)
+
+  -- Tear down loaded modules
+  after_each(function()
+    package.loaded['src/services/args'] = nil
     package.loaded['src/services/map'] = nil
+    package.loaded['src/services/tmx'] = nil
   end)
 
   describe('load', function()
     it('should exist', function()
-      assert.equal(type(Map.load), 'function')
+      local service = require(path)
+      assert.equal(type(service.load), 'function')
     end)
 
     it('should assert a valid map name is given', function()
+      local service = require(path)
       assert.errors(function()
-        Map.load('foobar')
+        service.load('foobar')
       end)
     end)
 
     it('should load images and quads from parsed tmx content', function()
+      package.loaded['src/services/love'].graphics.newQuad = function(tile_x, tile_y, tile_w, tile_h, img_w, img_h)
+        return {
+          tile_x = tile_x,
+          tile_y = tile_y,
+          tile_w = tile_w,
+          tile_h = tile_h,
+          img_w = img_w,
+          img_h = img_h
+        }
+      end
       local tmx_mock = {
         parse = function()
           return {
@@ -114,126 +154,231 @@ describe('services/map', function()
         end
       }
       package.loaded['src/services/tmx'] = tmx_mock
+      local service = require(path)
 
-      local results = Map.load('foo')
+      spy.on(Love.graphics, 'newQuad')
+
+      local results = service.load('foo')
+
       assert.equal(results.columns, 2)
       assert.equal(type(results.image), 'table')
       assert.equal(#results.quads, 256)
 
-      package.loaded['src/services/tmx'] = nil
+      assert.spy(Love.graphics.newQuad).called(256)
+    end)
+
+    it('should load fixtures from parsed tmx content', function()
+      local tmx_mock = {
+        parse = function()
+          return {
+            columns = 2,
+            layers = {},
+            object_groups = {
+              {
+                {
+                  crazy = 'definitely',
+                  height = 32,
+                  name = 'lil grass box',
+                  pos_x = 32,
+                  pos_y = 32,
+                  type = 'cute',
+                  width = 32
+                },
+                {
+                  name = 'Triangle',
+                  points = { 0, 0, 96, 96, 0, 96 },
+                  pos_x = 608,
+                  pos_y = 128
+                }
+              }
+            },
+            orientation = 'orthogonal',
+            render_order = 'right-down',
+            rows = 2,
+            tile_height = 32,
+            tile_width = 32,
+            tileset = {
+              columns = 1,
+              source = 'img/general.png',
+              tile_count = 1,
+              tile_height = 1,
+              tile_width = 1,
+              transparency = 'ffffff'
+            }
+          }
+        end
+      }
+      package.loaded['src/services/tmx'] = tmx_mock
+
+      local service = require(path)
+
+      spy.on(Love.physics, 'newBody')
+      spy.on(Love.physics, 'newPolygonShape')
+      spy.on(Love.physics, 'newRectangleShape')
+
+      local results = service.load('foo')
+
+      assert.equal(type(results.fixtures), 'table')
+      assert.equal(#results.fixtures, 2)
+
+      local fixture1 = results.fixtures[1]
+      assert.equal(fixture1.body, 'body')
+      assert.equal(fixture1.shape, 'rectangle')
+      local fixture2 = results.fixtures[2]
+      assert.equal(fixture2.body, 'body')
+      assert.equal(fixture2.shape, 'polygon')
+
+      assert.spy(Love.physics.newBody).called(2)
+      assert.spy(Love.physics.newPolygonShape).called(1)
+      assert.spy(Love.physics.newPolygonShape).called_with({0, 0, 96, 96, 0, 96})
+      assert.spy(Love.physics.newRectangleShape).called(1)
+      assert.spy(Love.physics.newRectangleShape).called_with(16, 16, 32, 32)
     end)
   end)
 
   describe('draw', function()
     it('should exist', function()
-      assert.equal(type(Map.draw), 'function')
+      local service = require(path)
+      assert.equal(type(service.draw), 'function')
     end)
 
     it('should draw the active map', function()
-      local xml_mock = {
+      local tmx_mock = {
         parse = function()
-          local parsed_xml = {
-            '        <?xml version="1.0" encoding="UTF-8"?>\n        ',
-            {
+          return {
+            columns = 2,
+            layers = {
               {
-                {
-                  empty = 1,
-                  label = 'image',
-                  xarg = {
-                    height = '512',
-                    source = '../../img/general.png',
-                    trans = 'ffffff',
-                    width = '512'
-                  }
-                },
-                label = 'tileset',
-                xarg = {
-                  columns = '16',
-                  firstgid = '1',
-                  name = 'general',
-                  tilecount = '256',
-                  tileheight = '32',
-                  tilewidth = '32'
-                }
-              },
-              {
-                {
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '1'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '2'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '17'
-                    }
-                  },
-                  {
-                    empty = 1,
-                    label = 'tile',
-                    xarg = {
-                      gid = '18'
-                    }
-                  },
-                  label = 'data',
-                  xarg = {}
-                },
-                label = 'layer',
-                xarg = {
-                  height = '2',
-                  name = 'Tile Layer 1',
-                  width = '2'
-                }
-              },
-              label = 'map',
-              xarg = {
+                data = { 1, 2, 17, 18 },
                 height = '2',
-                nextobjectid = '1',
-                orientation = 'orthogonal',
-                renderorder = 'right-down',
-                tileheight = '32',
-                tilewidth = '32',
-                version = '1.0',
+                pos_x = 0,
+                pos_y = 0,
                 width = '2'
               }
+            },
+            object_groups = {},
+            orientation = 'orthogonal',
+            render_order = 'right-down',
+            rows = 2,
+            tile_height = 32,
+            tile_width = 32,
+            tileset = {
+              columns = 16,
+              source = 'img/general.png',
+              tile_count = 256,
+              tile_height = 32,
+              tile_width = 32,
+              transparency = 'ffffff'
             }
           }
-          return parsed_xml
         end
       }
-      package.loaded['src/services/xml'] = xml_mock
+      package.loaded['src/services/tmx'] = tmx_mock
+      local service = require(path)
 
       spy.on(Love.graphics, 'draw')
 
-      Map.load('foo')
-      Map.draw()
+      service.load('foo')
+      service.draw()
       -- 4 tiles to draw
       assert.spy(Love.graphics.draw).called(4)
       assert.spy(Love.graphics.draw).called_with(match._, match._, 0, 0)
+      assert.spy(Love.graphics.draw).called_with(match._, match._, 32, 0)
+      assert.spy(Love.graphics.draw).called_with(match._, match._, 0, 32)
+      assert.spy(Love.graphics.draw).called_with(match._, match._, 32, 32)
+    end)
 
-      package.loaded['src/services/xml'] = nil
+    it('should draw fixtures on the active map in debug mode', function()
+      package.loaded['src/services/love'].physics.newBody = function(_, pos_x, pos_y)
+        local x = pos_x
+        local y = pos_y
+        return {
+          getWorldPoints = function()
+            return { x, y }
+          end
+        }
+      end
+      package.loaded['src/services/love'].physics.newPolygonShape = function()
+        return {
+          getPoints = function()
+            return true
+          end
+        }
+      end
+      package.loaded['src/services/love'].physics.newRectangleShape = function()
+        return {
+          getPoints = function()
+            return true
+          end
+        }
+      end
+      local args_mock = {
+        get_arg = function()
+          return true
+        end
+      }
+      package.loaded['src/services/args'] = args_mock
+      local tmx_mock = {
+        parse = function()
+          return {
+            columns = 2,
+            layers = {},
+            object_groups = {
+              {
+                {
+                  crazy = 'definitely',
+                  height = 32,
+                  name = 'lil grass box',
+                  pos_x = 32,
+                  pos_y = 32,
+                  type = 'cute',
+                  width = 32
+                },
+                {
+                  name = 'Triangle',
+                  points = { 0, 0, 96, 96, 0, 96 },
+                  pos_x = 608,
+                  pos_y = 128
+                }
+              }
+            },
+            orientation = 'orthogonal',
+            render_order = 'right-down',
+            rows = 2,
+            tile_height = 32,
+            tile_width = 32,
+            tileset = {
+              columns = 16,
+              source = 'img/general.png',
+              tile_count = 256,
+              tile_height = 32,
+              tile_width = 32,
+              transparency = 'ffffff'
+            }
+          }
+        end
+      }
+      package.loaded['src/services/tmx'] = tmx_mock
+      local service = require(path)
+
+      spy.on(Love.graphics, 'polygon')
+
+      service.load('foo')
+      service.draw()
+      assert.spy(Love.graphics.polygon).called(2)
     end)
   end)
 
   describe('unload', function()
     it('should exist', function()
-      assert.equal(type(Map.unload), 'function')
+      local service = require(path)
+      assert.equal(type(service.unload), 'function')
     end)
 
     it('should assert a valid map name is given', function()
+      local service = require(path)
       assert.errors(function()
-        Map.unload('foobar')
+        service.unload('foobar')
       end)
     end)
   end)

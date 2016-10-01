@@ -41,8 +41,7 @@ local Util = require 'src/services/util'
 local parse_layer_data_xml = function(tileset)
   local parsed_table = {}
   for i = 1, #tileset do
-    --table.insert(parsed_table, 1, tonumber(tileset[i].xarg.gid))
-    Util.push(parsed_table, tonumber(tileset[i].xarg.gid))
+    table.insert(parsed_table, tonumber(tileset[i].xarg.gid))
   end
   return parsed_table
 end
@@ -51,7 +50,7 @@ local parse_layer_data_csv = function(tileset)
   local parsed_table = {}
   local i = 1
   for str in string.gmatch(tileset[i], '([^,]+)') do
-    Util.push(parsed_table, tonumber(str))
+    table.insert(parsed_table, tonumber(str))
     i = i + 1
   end
   return parsed_table
@@ -124,13 +123,44 @@ local parse_object_group = function(raw_object_group, error_suffix)
     'Cannot find objects in object group' .. error_suffix
   )
   for _, raw_object in ipairs(raw_object_group) do
-    local formatted_object = {
-      label = raw_object[1].label,
-      points = raw_object[1].xarg.points,
-      pos_x = tonumber(raw_object.xarg.x),
-      pos_y = tonumber(raw_object.xarg.y)
-    }
-    Util.push(formatted_object_group, formatted_object)
+    local formatted_object = {}
+    if raw_object[1] and raw_object[1].xarg.points then
+      local points = {}
+      for _, val in ipairs(Util.split(raw_object[1].xarg.points)) do
+        for _, point in ipairs(Util.split(val, ',')) do
+          table.insert(points, tonumber(point))
+        end
+      end
+      formatted_object.points = points
+    end
+    if raw_object.xarg.height then
+      formatted_object.height = tonumber(raw_object.xarg.height)
+    end
+    if raw_object.xarg.name then
+      formatted_object.name = raw_object.xarg.name
+    end
+    if raw_object.xarg.rotation then
+      formatted_object.rotation = tonumber(raw_object.xarg.rotation)
+    end
+    if raw_object.xarg.type then
+      formatted_object.type = raw_object.xarg.type
+    end
+    if raw_object.xarg.width then
+      formatted_object.width = tonumber(raw_object.xarg.width)
+    end
+    if raw_object.xarg.x then
+      formatted_object.pos_x = tonumber(raw_object.xarg.x)
+    end
+    if raw_object.xarg.y then
+      formatted_object.pos_y = tonumber(raw_object.xarg.y)
+    end
+    -- Shallow copy all the object's "custom properties" attributes
+    if raw_object[1] then
+      for _, property in ipairs(raw_object[1]) do
+        formatted_object[property.xarg.name] = property.xarg.value
+      end
+    end
+    table.insert(formatted_object_group, formatted_object)
   end
   return formatted_object_group
 end
