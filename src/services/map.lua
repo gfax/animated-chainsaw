@@ -105,10 +105,13 @@ local load = function(map_name)
           object.pos_y,
           'static'
         )
+        if object.rotation then
+          body:setAngle(object.rotation)
+        end
         local shape
         if object.points then
           shape = Love.physics.newPolygonShape(object.points)
-        else
+        elseif object.width then
           shape = Love.physics.newRectangleShape(
             object.width / 2,
             object.height / 2,
@@ -116,7 +119,9 @@ local load = function(map_name)
             object.height
           )
         end
-        table.insert(fixtures, Love.physics.newFixture(body, shape))
+        if shape then
+          table.insert(fixtures, Love.physics.newFixture(body, shape))
+        end
       end
     end
     return fixtures

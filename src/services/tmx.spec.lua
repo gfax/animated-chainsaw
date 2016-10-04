@@ -218,7 +218,7 @@ describe('services/tmx', function()
           </data>
          </layer>
          <objectgroup name="collision">
-          <object id="1" name="lil grass box" type="cute" x="32" y="32" width="32" height="32" rotation="1.23">
+          <object id="1" name="lil grass box" type="cute" x="32" y="32" width="32" height="32" rotation="-45">
            <properties>
             <property name="crazy" value="definitely"/>
            </properties>
@@ -262,6 +262,8 @@ describe('services/tmx', function()
       assert.equal(object1.name, 'lil grass box')
       assert.equal(object1.pos_x, 32)
       assert.equal(object1.pos_y, 32)
+      -- Convert tiled rotation degrees to box2d radians
+      assert.equal(object1.rotation, math.rad(-45))
       assert.equal(object1.type, 'cute')
       assert.equal(object1.width, 32)
 

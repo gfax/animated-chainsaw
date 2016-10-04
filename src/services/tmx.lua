@@ -140,7 +140,7 @@ local parse_object_group = function(raw_object_group, error_suffix)
       formatted_object.name = raw_object.xarg.name
     end
     if raw_object.xarg.rotation then
-      formatted_object.rotation = tonumber(raw_object.xarg.rotation)
+      formatted_object.rotation = math.rad(tonumber(raw_object.xarg.rotation))
     end
     if raw_object.xarg.type then
       formatted_object.type = raw_object.xarg.type

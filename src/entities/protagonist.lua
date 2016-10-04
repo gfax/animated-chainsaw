@@ -7,7 +7,7 @@ local name = 'protagonist'
 local body = Love.physics.newBody(World, 0, 0, 'dynamic')
 body:setFixedRotation(true)
 
-local shape = Love.physics.newRectangleShape(32, 42, 32, 42)
+local shape = Love.physics.newRectangleShape(32, 46, 32, 32)
 
 local fixture = Love.physics.newFixture(body, shape)
 
