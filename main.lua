@@ -4,6 +4,7 @@
 
 -- Services
 local Args = require 'src/services/args'
+local Camera = require 'src/services/camera'
 local Entity = require 'src/services/entity'
 local Input = require 'src/services/input'
 local InputConfig = require 'src/services/input-config'
@@ -13,6 +14,7 @@ local World = require 'src/services/world'
 
 -- Systems
 local DrawEntity = require 'src/systems/draw-entity'
+local UpdateCamera = require 'src/systems/update-camera'
 local UpdateEntityAnimation = require 'src/systems/update-entity-animation'
 local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
 
@@ -25,8 +27,10 @@ end
 
 -- Functions to run on re-draw
 function Love.draw()
+  Camera.set()
   Map.draw()
   DrawEntity(Entity.list)
+  Camera.unset()
 end
 
 -- All active callbacks for pressing a key
@@ -44,6 +48,7 @@ end
 -- Calculations to re-run on going through another loop
 -- dt (integer) delta time (in seconds)
 function Love.update(dt)
+  UpdateCamera(Entity.list)
   UpdateEntityAnimation(Entity.list, dt)
   UpdatePlayerVelocity(Entity.list)
   World:update(dt)

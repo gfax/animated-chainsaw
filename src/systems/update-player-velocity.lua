@@ -3,7 +3,6 @@
 -- active <input_direction>s on the player.
 
 local System = require 'lib/system'
-local Window = require 'src/services/window'
 
 local components = {
   '-player_id',
@@ -50,18 +49,12 @@ local system = function(acceleration, body, input_direction, max_speed)
 
   -- Check if player is going to run off the screen
   local pos_x, pos_y = body:getPosition()
-  local boundary_x = Window.width - 38
-  local boundary_y = Window.height - 38
 
   if (pos_x <= 4 and vel_x < 0) then
-    vel_x = 0
-  elseif (pos_x >= boundary_x and vel_x > 0) then
     vel_x = 0
   end
 
   if (pos_y <= 4 and vel_y < 0) then
-    vel_y = 0
-  elseif (pos_y >= boundary_y and vel_y > 0) then
     vel_y = 0
   end
 
