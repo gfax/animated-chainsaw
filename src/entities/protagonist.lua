@@ -10,6 +10,7 @@ body:setFixedRotation(true)
 local shape = Love.physics.newRectangleShape(32, 46, 32, 32)
 
 local fixture = Love.physics.newFixture(body, shape)
+fixture:setFriction(0)
 
 local entity = {
   acceleration = 140,
