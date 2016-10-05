@@ -12,6 +12,14 @@ sprite_maps.protagonist = {
   y = 128
 }
 
+sprite_maps.generalsman = {
+  path = 'img/generalsman.png',
+  width = 64,
+  height = 64,
+  x = 0,
+  y = 128
+}
+
 -- Example animated sprite
 --sprite_maps.dove = {
   --path = 'img/dove.png',
