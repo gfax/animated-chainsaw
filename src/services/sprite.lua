@@ -4,7 +4,7 @@ local Love = require 'src/services/love'
 -- Information about sprites we need to create
 local sprite_maps = {}
 
-sprite_maps.protagonist = {
+sprite_maps['protagonist'] = {
   path = 'img/male-player.png',
   width = 64,
   height = 64,
@@ -12,8 +12,8 @@ sprite_maps.protagonist = {
   y = 128
 }
 
-sprite_maps.generalsman = {
-  path = 'img/generalsman.png',
+sprite_maps['fruitstand-keeper'] = {
+  path = 'img/fruitstand-keeper.png',
   width = 64,
   height = 64,
   x = 0,

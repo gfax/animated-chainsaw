@@ -2,6 +2,7 @@
 -- Store and decode maps as needed
 
 local Args = require 'src/services/args'
+local Entity = require 'src/services/entity'
 local Love = require 'src/services/love'
 local Tmx = require 'src/services/tmx'
 local Util = require 'src/services/util'
@@ -99,28 +100,32 @@ local load = function(map_name)
     -- Apply collision
     for _, object_group in ipairs(map.object_groups) do
       for _, object in ipairs(object_group) do
-        local body = Love.physics.newBody(
-          World,
-          object.pos_x,
-          object.pos_y,
-          'static'
-        )
-        if object.rotation then
-          body:setAngle(object.rotation)
-        end
-        local shape
-        if object.points then
-          shape = Love.physics.newPolygonShape(object.points)
-        elseif object.width then
-          shape = Love.physics.newRectangleShape(
-            object.width / 2,
-            object.height / 2,
-            object.width,
-            object.height
+        if object.name and object.type == 'entity' then
+          Entity.spawn(object.name, object)
+        else
+          local body = Love.physics.newBody(
+            World,
+            object.pos_x,
+            object.pos_y,
+            'static'
           )
-        end
-        if shape then
-          table.insert(fixtures, Love.physics.newFixture(body, shape))
+          if object.rotation then
+            body:setAngle(object.rotation)
+          end
+          local shape
+          if object.points then
+            shape = Love.physics.newPolygonShape(object.points)
+          elseif object.width then
+            shape = Love.physics.newRectangleShape(
+              object.width / 2,
+              object.height / 2,
+              object.width,
+              object.height
+            )
+          end
+          if shape then
+            table.insert(fixtures, Love.physics.newFixture(body, shape))
+          end
         end
       end
     end

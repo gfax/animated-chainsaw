@@ -89,7 +89,7 @@ local parse_layer = function(raw_layer_data, error_suffix)
           mult = mult * 2
       end
       for i = 1, #tile_data_string, 4 do
-        -- Glue together an integer from four bytes. Little endian
+        -- Glue together an integer from four bytes, little endian
         local int = string.byte(tile_data_string, i) % bin[9] +
           string.byte(tile_data_string, i + 1) % bin[9] * bin[9] +
           string.byte(tile_data_string, i + 2) % bin[9] * bin[17] +

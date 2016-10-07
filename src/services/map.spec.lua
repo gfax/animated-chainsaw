@@ -3,6 +3,17 @@ describe('services/map', function()
   local Love
   local path = 'src/services/map'
 
+  -- Mock Entity dependency
+  before_each(function()
+    local entity_mock = {
+      spawn = function() end
+    }
+    package.loaded['src/services/entity'] = entity_mock
+  end)
+  after_each(function()
+    package.loaded['src/services/entity'] = nil
+  end)
+
   -- Mock Love dependency
   before_each(function()
     local love_mock = {
