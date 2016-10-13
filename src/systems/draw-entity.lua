@@ -7,35 +7,19 @@ local System = require 'lib/system'
 
 local components = {
   'body',
-  'sprite',
-  '?shape'
+  'sprites',
+  '?current_action',
+  '?shape',
 }
 
-local draw_animation = function(body, sprite)
-  sprite.animation:draw(
-    sprite.animation,
+local system = function(body, sprites, current_action, shape)
+  local sprite_key = current_action or 'default'
+  sprites.actions[sprite_key]:draw(
+    sprites.image,
     body:getX(),
     body:getY(),
     body:getAngle()
   )
-end
-
-local draw_quad = function(body, sprite)
-  Love.graphics.draw(
-    sprite.image,
-    sprite.quad,
-    body:getX(),
-    body:getY(),
-    body:getAngle()
-  )
-end
-
-local system = function(body, sprite, shape)
-  if sprite.animation then
-    draw_animation(body, sprite)
-  else
-    draw_quad(body, sprite)
-  end
 
   if Args.get_arg('debug') and shape then
     Love.graphics.setColor(160, 72, 14, 255)

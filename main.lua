@@ -1,13 +1,10 @@
 --- This is the main Love file, containing all the pieces of the game loop.
 
--- Libs
-
 -- Services
 local Args = require 'src/services/args'
 local Camera = require 'src/services/camera'
 local Entity = require 'src/services/entity'
 local Input = require 'src/services/input'
-local InputConfig = require 'src/services/input-config'
 local Love = require 'src/services/love'
 local Map = require 'src/services/map'
 local World = require 'src/services/world'
@@ -21,15 +18,20 @@ local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
 -- Functions to initialize on game boot
 function Love.load(args)
   Args.load(args)
-  InputConfig.update()
   Map.load('general')
+  -- Press esc to close game
+  Input.register_key_press('escape', function()
+    Love.event.quit()
+  end)
 end
 
 -- Functions to run on re-draw
 function Love.draw()
   Camera.set()
   Map.draw()
-  DrawEntity(Entity.list)
+  for _, entity in ipairs(Entity.list) do
+    DrawEntity(entity)
+  end
   Camera.unset()
 end
 
@@ -48,8 +50,10 @@ end
 -- Calculations to re-run on going through another loop
 -- dt (integer) delta time (in seconds)
 function Love.update(dt)
-  UpdateCamera(Entity.list)
-  UpdateEntityAnimation(Entity.list, dt)
-  UpdatePlayerVelocity(Entity.list)
+  for _, entity in ipairs(Entity.list) do
+    UpdateCamera(entity)
+    UpdateEntityAnimation(entity, dt)
+    UpdatePlayerVelocity(entity)
+  end
   World:update(dt)
 end

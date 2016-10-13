@@ -1,86 +1,46 @@
 local Anim8 = require 'lib/anim8'
 local Love = require 'src/services/love'
 
--- Information about sprites we need to create
-local sprite_maps = {}
-
-sprite_maps['protagonist'] = {
-  path = 'img/male-player.png',
-  width = 64,
-  height = 64,
-  x = 0,
-  y = 128
-}
-
-sprite_maps['fruitstand-keeper'] = {
-  path = 'img/fruitstand-keeper.png',
-  width = 64,
-  height = 64,
-  x = 0,
-  y = 128
-}
-
--- Example animated sprite
---sprite_maps.dove = {
-  --path = 'img/dove.png',
-  --width = 32,
-  --height = 32,
-  --frames = '1-4',
-  --duration = 0.2,
-  --x = 0,
-  --y = 0
---}
-
-local build_animation = function(map, image)
-  local frame_w = map.width
-  local frame_h = map.height
-
-  local img_w = image:getWidth()
-  local img_h = image:getHeight()
-
-  local x = map.x or 0
-  local y = map.y or 0
-  local gap = map.gap or 0
+local build_animation = function(sprite, frame_w, frame_h, img_w, img_h)
+  local x = sprite.x or 0
+  local y = sprite.y or 0
+  local gap = sprite.gap or 0
 
   local grid = Anim8.newGrid(frame_w, frame_h, img_w, img_h, x, y, gap)
 
-  local frames = map.frames
-  local duration = map.duration
+  local frames = sprite.frames or 1
+  local duration = sprite.duration or 1
 
   return Anim8.newAnimation(grid(frames, 1), duration)
 end
 
-local build_quad = function(map, image)
-  local img_w = image:getWidth()
-  local img_h = image:getHeight()
+local load_set = function(sprite_config)
+  sprite_config = require('src/components/sprites/' .. sprite_config)
+  local loaded_set = {}
+  loaded_set.image = Love.graphics.newImage(sprite_config.path)
+  loaded_set.actions = {}
+  local img_w = loaded_set.image:getWidth()
+  local img_h = loaded_set.image:getHeight()
 
-  local x = map.x or 0
-  local y = map.y or 0
+  for key, sprite in pairs(sprite_config.actions) do
+    loaded_set.actions[key] = build_animation(
+      sprite,
+      sprite_config.width,
+      sprite_config.height,
+      img_w,
+      img_h
+    )
+    --sprites[key].image = image
 
-  return Love.graphics.newQuad(x, y, map.width, map.height, img_w, img_h)
-end
-
-local build_sprites = function(maps)
-  local sprites = {}
-
-  for key, map in pairs(maps) do
-    local image = Love.graphics.newImage(map.path)
-
-    sprites[key] = {}
-    sprites[key].image = image
-
-    if (map.duration) then
-      sprites[key].animation = build_animation(map, image)
-    else
-      sprites[key].quad = build_quad(map, image)
-    end
+    --if (map.duration) then
+      --sprites[key].animation = build_animation(map, image)
+    --else
+      --sprites[key].quad = build_quad(map, image)
+    --end
   end
-  return sprites
+  return loaded_set
 end
-
--- Processed sprites, exposed and ready for rendering
-local list = build_sprites(sprite_maps)
 
 return {
-  list = list
+  load_set = load_set
 }

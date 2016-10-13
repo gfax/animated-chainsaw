@@ -1,4 +1,6 @@
 local Love = require 'src/services/love'
+local PlayerInput = require 'src/services/player-input'
+local Sprite = require 'src/services/sprite'
 local Util = require 'src/services/util'
 local World = require 'src/services/world'
 
@@ -82,6 +84,12 @@ local spawn = function(name, object)
   entity.body = build_body(entity_config, object.pos_x, object.pos_y)
   entity.shape = build_shape(entity_config)
   entity.fixture = build_fixture(entity_config, entity.body, entity.shape)
+  entity.sprites = Sprite.load_set(entity_config.sprites)
+  entity.current_action = 'default'
+  -- Kind of a mess right now
+  if entity.player_id then
+    PlayerInput.register(entity)
+  end
   table.insert(entities, entity)
 end
 

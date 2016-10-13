@@ -1,9 +1,19 @@
-local Sprite = require 'src/services/sprite'
-
-local name = 'protagonist'
-
-local entity = {
+return {
   acceleration = 140,
+  actions = {
+    'shoot_down',
+    'shoot_left',
+    'shoot_right',
+    'shoot_up',
+    'stand_down',
+    'stand_left',
+    'stand_right',
+    'stand_up',
+    'walk_down',
+    'walk_left',
+    'walk_right',
+    'walk_up'
+  },
   body = {
     fixed_rotation = true,
     type = 'dynamic'
@@ -11,7 +21,7 @@ local entity = {
   fixture = {
     friction = 0
   },
-  input_direction = {
+  input = {
     down = false,
     left = false,
     right = false,
@@ -26,7 +36,5 @@ local entity = {
     width = 32,
     type = 'rectangle'
   },
-  sprite = Sprite.list[name],
+  sprites = 'protagonist'
 }
-
-return entity

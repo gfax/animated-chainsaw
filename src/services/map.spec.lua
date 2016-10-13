@@ -241,7 +241,7 @@ describe('services/map', function()
 
       assert.spy(Love.physics.newBody).called(2)
       assert.spy(Love.physics.newPolygonShape).called(1)
-      assert.spy(Love.physics.newPolygonShape).called_with({0, 0, 96, 96, 0, 96})
+      assert.spy(Love.physics.newPolygonShape).called_with({ 0, 0, 96, 96, 0, 96 })
       assert.spy(Love.physics.newRectangleShape).called(1)
       assert.spy(Love.physics.newRectangleShape).called_with(16, 16, 32, 32)
     end)

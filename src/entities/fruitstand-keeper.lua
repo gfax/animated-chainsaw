@@ -1,8 +1,4 @@
-local Sprite = require 'src/services/sprite'
-
-local name = 'fruitstand-keeper'
-
-local entity = {
+return {
   body = {
     fixed_rotation = false,
     type = 'dynamic'
@@ -18,7 +14,5 @@ local entity = {
     width = 32,
     type = 'rectangle'
   },
-  sprite = Sprite.list[name],
+  sprites = 'fruitstand-keeper'
 }
-
-return entity
