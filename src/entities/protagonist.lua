@@ -1,18 +1,18 @@
 return {
   acceleration = 140,
   actions = {
-    'shoot_down',
-    'shoot_left',
-    'shoot_right',
-    'shoot_up',
-    'stand_down',
-    'stand_left',
-    'stand_right',
-    'stand_up',
-    'walk_down',
-    'walk_left',
-    'walk_right',
-    'walk_up'
+    'shoot-down',
+    'shoot-left',
+    'shoot-right',
+    'shoot-up',
+    'stand-down',
+    'stand-left',
+    'stand-right',
+    'stand-up',
+    'move-down',
+    'move-left',
+    'move-right',
+    'move-up'
   },
   body = {
     fixed_rotation = true,
@@ -21,11 +21,11 @@ return {
   fixture = {
     friction = 0
   },
-  input = {
-    down = false,
-    left = false,
-    right = false,
-    up = false
+  input_actions = {
+    down = 'move-down',
+    left = 'move-left',
+    right = 'move-right',
+    up = 'move-up'
   },
   max_speed = 100,
   player_id = 1,

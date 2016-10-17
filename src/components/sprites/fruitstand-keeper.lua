@@ -47,25 +47,25 @@ return {
       x = 0,
       y = 512
     },
-    walk_down = {
+    move_down = {
       duration = 0.1,
       frames = '1-9',
       x = 0,
       y = 640
     },
-    walk_left = {
+    move_left = {
       duration = 0.1,
       frames = '1-9',
       x = 0,
       y = 576
     },
-    walk_right = {
+    move_right = {
       duration = 0.1,
       frames = '1-9',
       x = 0,
       y = 704
     },
-    walk_up = {
+    move_up = {
       duration = 0.1,
       frames = '1-9',
       x = 0,

@@ -8,12 +8,12 @@ local System = require 'lib/system'
 local components = {
   'body',
   'sprites',
-  '?current_action',
+  'current_action',
   '?shape',
 }
 
 local system = function(body, sprites, current_action, shape)
-  local sprite_key = current_action or 'default'
+  local sprite_key = current_action
   sprites.actions[sprite_key]:draw(
     sprites.image,
     body:getX(),
