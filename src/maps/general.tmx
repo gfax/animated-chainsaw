@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="126">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="147">
  <tileset firstgid="1" name="general" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../../img/general.png" trans="ffffff" width="512" height="512"/>
   <terraintypes>
@@ -43,12 +43,12 @@
  </layer>
  <layer name="platforms" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJzt2EsuZGEcxuGzAc0GNBtw2QBWgBVgBViBZgONZTDvtgKsAHEdujRtqHUw8JaUOJIa9EB89Hme5Dc6SeVN/kkNvqoCAJrkR/qZNkoP4clm2krbpYfwxD0+Fvf4WJ7v0eowHaXjdicFdzVV/R6X6Sr9bnddcFdT1f+vTtNZOk8XJUc1WP0eN+lPuk1/S45qsJ20m/bSQ7uWu3RfahQA/62u9CV1p57CW6iq3vQ19aX+tF77tpC+pcW09N7DGmogDaahNJzWat++p+W0klb/4bf2a42k0TT2lmPp6KB6eZPpVOuNZjxNpMlCG5vkV/XyJtOp1hvNVJpOM4U28tpsmkvzpYcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACfyiMTjEaA
+   eJzt2EkuRGEYheG7Ec0GNBvACrACrAAr0SyDOVaAFSDaoZ6hJhg4VSmpK6mBgfhL7vMk76iSm5N8SQ3+qgIAmmQrbaed0kNo2017ab/0ENrco7+4R3/5uker03SWzjtdFNzVVPV73KX79NDpseCupqr/X12mq3SdbkqOarD6PZ7Sc3pJryVHNdhBOkxH6aNTy1t6LzUKAPgTA2kwDaXhtFl0DSNpNI2l8bRR+20lraa1tP6Dbx3XmkiTaeo3x9LTSdV9k+lV641mOs2k2UIbm+S26r7J9Kr1RjOX5tNCoY18t5iW0nLpIQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwL/yCYLuREw=
   </data>
  </layer>
  <layer name="items" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJztzrEJAkEYhNGtXzs4Ua8BTxuwBBsSAyfYwAsXFn6Q9+ALB6Y1AADg17P6ADuv6gMAAAAAf+ycLuma1sHtIR17zHFLW7qnx+B2SacedT7pXX0CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAKb7jeAwl
+   eJztzskJgFAAQ0Hr1w4UlwZcGrEh8WAONiAIX2QG3jGQqgIAAPiuvfQBAAAAgB/r05DGND3c1qm54x1zWtKatofbNnV3lHOmo/QJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXnEBu4cLaA==
   </data>
  </layer>
  <layer name="items" width="100" height="100">
@@ -61,7 +61,7 @@
    eJztzjENAAAIA7D5D6LRsIPwtAqaAAAAAAAAAEBvvgMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAARxZuCwCN
   </data>
  </layer>
- <objectgroup name="collisions">
+ <objectgroup name="ground entities">
   <object id="31" type="collision" x="358" y="147" width="86" height="22"/>
   <object id="32" type="collision" x="320" y="160" width="32" height="256"/>
   <object id="33" type="collision" x="288" y="416" width="32" height="384"/>
@@ -81,22 +81,18 @@
   <object id="55" type="collision" x="448" y="384" width="32" height="64"/>
   <object id="59" type="collision" x="1072" y="387" width="256" height="32" rotation="45"/>
   <object id="61" type="collision" x="1212" y="555" width="105" height="34" rotation="45"/>
-  <object id="62" type="collision" x="1184" y="547" width="32" height="32"/>
+  <object id="62" type="collision" x="1186" y="547" width="32" height="32"/>
   <object id="63" type="collision" x="1248" y="621" width="128" height="32"/>
   <object id="64" type="collision" x="1760" y="543" width="32" height="96" rotation="-45"/>
   <object id="65" type="collision" x="906" y="391" width="32" height="138" rotation="45"/>
-  <object id="76" type="collision" x="1024" y="576" width="128" height="64"/>
-  <object id="79" type="collision" x="1536" y="608">
-   <polyline points="0,0 -32,32 0,64 32,64 64,32 32,0 0,0"/>
-  </object>
+  <object id="76" type="collision" x="1024" y="588" width="128" height="54"/>
   <object id="80" type="collision" x="1376" y="653">
    <polygon points="0,0 32,0 0,-32"/>
   </object>
-  <object id="86" type="collision" x="817" y="576" width="143" height="64"/>
-  <object id="87" type="collision" x="817" y="558" width="112" height="16"/>
+  <object id="86" type="collision" x="817" y="576" width="110" height="64"/>
   <object id="91" type="collision" x="448" y="160" width="32" height="128"/>
-  <object id="92" type="collision" x="416" y="224" width="32" height="32"/>
-  <object id="93" type="collision" x="1408" y="608" width="96" height="32"/>
+  <object id="92" type="collision" x="422" y="254" width="20" height="19"/>
+  <object id="93" type="collision" x="1408" y="614" width="96" height="24"/>
   <object id="106" type="collision" x="637" y="104">
    <polygon points="0,0 55,51 73,-3"/>
   </object>
@@ -115,11 +111,45 @@
   <object id="112" type="collision" x="509" y="105">
    <polygon points="0,0 43,-57 40,16 122,-19"/>
   </object>
- </objectgroup>
- <objectgroup name="entities">
-  <object id="115" name="protagonist" type="entity" x="512" y="299" width="32" height="46"/>
-  <object id="120" name="fruitstand-keeper" type="entity" x="979" y="589" width="32" height="46">
+  <object id="126" name="fruitstand-keeper" type="entity" x="979" y="589" width="32" height="46">
    <ellipse/>
   </object>
+  <object id="128" name="protagonist" type="entity" x="512" y="299" width="32" height="46"/>
+  <object id="131" x="943" y="584">
+   <polygon points="0,0 -8,8 -8,24 8,24 8,8"/>
+  </object>
+  <object id="132" x="943" y="615">
+   <polygon points="0,0 -8,8 -8,24 8,24 8,8"/>
+  </object>
+  <object id="134" x="1528" y="616">
+   <polygon points="0,0 -16,16 16,16"/>
+  </object>
+  <object id="135" x="1512" y="632">
+   <polygon points="0,0 -8,16 0,24"/>
+  </object>
+  <object id="138" x="1512" y="632">
+   <polygon points="0,0 0,24 40,24"/>
+  </object>
+  <object id="139" x="1536" y="656">
+   <polygon points="0,0 0,8 56,8"/>
+  </object>
+  <object id="141" x="1592" y="632">
+   <polygon points="0,0 0,32 -40,8"/>
+  </object>
+  <object id="143" x="1600" y="624">
+   <polygon points="0,0 -40,0 0,24"/>
+  </object>
+  <object id="145" x="1584" y="608">
+   <polygon points="0,0 0,16 -56,0"/>
+  </object>
+  <object id="146" x="1520" y="616">
+   <polygon points="0,0 8,-8 0,8"/>
+  </object>
  </objectgroup>
+ <layer name="above ground" width="100" height="100">
+  <data encoding="base64" compression="zlib">
+   eJztzrENwkAUREE3AKZhA43ZuAKgAqAUb3DBRZac8JMZ6WnTHQYAAKA3Vx8AAAAADjulcxrTpfgL+6Z0Tbd0r70CQJGl9Uhrt9R4tl7p3S01Pq1v+nULAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMD/bcdmEYA=
+  </data>
+ </layer>
+ <objectgroup name="bridge entities"/>
 </map>

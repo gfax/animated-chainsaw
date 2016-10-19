@@ -182,17 +182,29 @@ describe('services/tmx', function()
 
       local results = Tmx.parse('foo', test_tmx)
       assert.equal(results.columns, 2)
-      assert.equal(#results.layers, 1)
-      assert.equal(#results.layers[1].data, 4)
-      assert.equal(results.layers[1].data[1], 164)
-      assert.equal(results.layers[1].data[2], 164)
-      assert.equal(results.layers[1].data[3], 164)
-      assert.equal(results.layers[1].data[4], 161)
+      assert.equal(#results.layers, 2)
+
+      local layer1 = results.layers[1]
+      assert.equal(type(layer1), 'table')
+      assert.equal(layer1.type, 'tiles')
+      assert.equal(type(layer1.data), 'table')
+      assert.equal(#layer1.data, 4)
+      assert.equal(layer1.data[1], 164)
+      assert.equal(layer1.data[2], 164)
+      assert.equal(layer1.data[3], 164)
+      assert.equal(layer1.data[4], 161)
+
+      local layer2 = results.layers[2]
+      assert.equal(type(layer2), 'table')
+      assert.equal(layer2.type, 'objects')
+      assert.equal(type(layer2.objects), 'table')
+
       assert.equal(results.orientation, 'orthogonal')
       assert.equal(results.render_order, 'right-down')
       assert.equal(results.rows, 2)
       assert.equal(results.tile_height, 32)
       assert.equal(results.tile_width, 32)
+
       assert.equal(type(results.tileset), 'table')
       assert.equal(results.tileset.columns, 16)
       assert.equal(results.tileset.source, 'img/general.png')
@@ -202,7 +214,7 @@ describe('services/tmx', function()
       assert.equal(results.tileset.transparency, 'ffffff')
     end)
 
-    it('should parse object groups', function()
+    it('should parse object layers', function()
       local test_tmx = [[
         <?xml version="1.0" encoding="UTF-8"?>
         <map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="2">
@@ -230,9 +242,9 @@ describe('services/tmx', function()
         </map>
       ]]
 
-      -- object_groups table results:
+      -- example object layer:
       -- {
-      --   {
+      --   objects = {
       --     {
       --       crazy = 'definitely',
       --       height = 32,
@@ -248,15 +260,20 @@ describe('services/tmx', function()
       --       pos_x = 608,
       --       pos_y = 128
       --     }
-      --   }
+      --   },
+      --   type = 'objects'
       -- }
 
       local results = Tmx.parse('foo', test_tmx)
 
-      assert.equal(#results.object_groups, 1)
+      assert.equal(#results.layers, 2)
 
-      local object_group = results.object_groups[1]
-      local object1 = object_group[1]
+      local object_layer = results.layers[2]
+      assert.equal(type(object_layer), 'table')
+      assert.equal(object_layer.type, 'objects')
+      assert.equal(type(object_layer.objects), 'table')
+
+      local object1 = object_layer.objects[1]
       assert.equal(object1.crazy, 'definitely')
       assert.equal(object1.height, 32)
       assert.equal(object1.name, 'lil grass box')
@@ -267,7 +284,7 @@ describe('services/tmx', function()
       assert.equal(object1.type, 'cute')
       assert.equal(object1.width, 32)
 
-      local object2 = object_group[2]
+      local object2 = object_layer.objects[2]
       assert.equal(object2.name, 'Triangle')
       assert.equal(type(object2.points), 'table')
       assert.equal(#object2.points, 6)

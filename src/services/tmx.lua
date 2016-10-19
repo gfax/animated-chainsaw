@@ -14,13 +14,17 @@ local Util = require 'src/services/util'
 --     {
 --       data = { 18, 17, 2, 1 },
 --       height = "2",
+--       type = 'tiles',
 --       width = "2",
 --       x = 0,
 --       y = 0
+--     },
+--     {
+--       groups = {
+--         { ... }
+--       },
+--       type = 'objects'
 --     }
---   },
---   object_groups = {
---     { ... }
 --   },
 --   orientation = "orthogonal",
 --   quads = { <love quad>, <love quad>, ... },
@@ -56,8 +60,10 @@ local parse_layer_data_csv = function(tileset)
   return parsed_table
 end
 
-local parse_layer = function(raw_layer_data, error_suffix)
-  local formatted_layer = {}
+local parse_tile_layer = function(raw_layer_data, error_suffix)
+  local formatted_layer = {
+    type = 'tiles'
+  }
   formatted_layer.data = {}
   formatted_layer.height = raw_layer_data.xarg.height
   formatted_layer.width = raw_layer_data.xarg.width
@@ -116,12 +122,11 @@ local parse_layer = function(raw_layer_data, error_suffix)
   return formatted_layer
 end
 
-local parse_object_group = function(raw_object_group, error_suffix)
-  local formatted_object_group = {}
-  assert(
-    raw_object_group[1].label == 'object',
-    'Cannot find objects in object group' .. error_suffix
-  )
+local parse_object_layer = function(raw_object_group)
+  local formatted_object_group = {
+    objects = {},
+    type = 'objects'
+  }
   for _, raw_object in ipairs(raw_object_group) do
     local formatted_object = {}
     if raw_object[1] and raw_object[1].xarg.points then
@@ -160,7 +165,7 @@ local parse_object_group = function(raw_object_group, error_suffix)
         formatted_object[property.xarg.name] = property.xarg.value
       end
     end
-    table.insert(formatted_object_group, formatted_object)
+    table.insert(formatted_object_group.objects, formatted_object)
   end
   return formatted_object_group
 end
@@ -200,8 +205,7 @@ end
 local parse = function(file_name, raw_file_content)
   -- This will be our map's final table:
   local parsed_map = {
-    layers = {},
-    object_groups = {}
+    layers = {}
   }
   -- We get an array of elements, but only need the map element
   local parsed_xml = Xml.parse(raw_file_content)[2]
@@ -228,11 +232,13 @@ local parse = function(file_name, raw_file_content)
   parsed_map.tile_width = tonumber(parsed_xml.xarg.tilewidth)
   for _, element in ipairs(parsed_xml) do
     if element.label == 'layer' then
-      local parsed_layer = parse_layer(element, error_suffix)
-      Util.push(parsed_map.layers, parsed_layer)
+      table.insert(parsed_map.layers, parse_tile_layer(element, error_suffix))
+      --local parsed_layer = parse_tile_layer(element, error_suffix)
+      --Util.push(parsed_map.layers, parsed_layer)
     elseif element.label == 'objectgroup' then
-      local parsed_object_group = parse_object_group(element, error_suffix)
-      Util.push(parsed_map.object_groups, parsed_object_group)
+      table.insert(parsed_map.layers, parse_object_layer(element))
+      --local parsed_object_group = parse_object_layer(element)
+      --Util.push(parsed_map.layers, parsed_object_group)
     elseif element.label == 'tileset' then
       parsed_map.tileset = parse_tileset(element, error_suffix)
     end

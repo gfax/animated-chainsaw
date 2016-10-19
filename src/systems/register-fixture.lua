@@ -11,7 +11,7 @@ local components = {
   'shape'
 }
 
-local system = function(entity, body, shape)
+local system = function(entity, body, shape, layer_index)
   local fixture = Love.physics.newFixture(body, shape)
   if entity.fixture then
     if entity.fixture.friction then
@@ -21,6 +21,8 @@ local system = function(entity, body, shape)
       fixture:setRestitution(entity.fixture.restitution)
     end
   end
+  -- Fixtures in different layers cannot collide with each other
+  fixture:setGroupIndex(layer_index)
   entity.fixture = fixture
 end
 

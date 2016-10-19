@@ -8,6 +8,8 @@ local Tmx = require 'src/services/tmx'
 local Util = require 'src/services/util'
 local World = require 'src/services/world'
 
+local drawEntity = require 'src/systems/draw-entity'
+
 -- Creates table of map filenames as keys
 -- and their contents as parsed tables:
 local get_map_tables = function(map_directory, map_file_ext)
@@ -35,32 +37,46 @@ local map_directory = 'src/maps'
 local map_file_ext = '.tmx'
 local maps = get_map_tables(map_directory, map_file_ext)
 
-local draw = function()
-  local map = active_map
-  -- Draw layers
-  for _, layer in ipairs(map.layers) do
-    for i, tile in ipairs(layer.data) do
-      -- Skip unset tiles
-      if tile ~= 0 then
-        local tile_pos_x = map.tile_width * ((i - 1) % map.columns)
-        local tile_pos_y = map.tile_height * math.floor((i - 1) / map.rows)
-        Love.graphics.draw(
-          map.image,
-          map.quads[tile],
-          tile_pos_x,
-          tile_pos_y
-        )
-      end
-    end
+local draw_objects = function(layer, layer_idx)
+  -- Draw each entity that belongs to this layer
+  for _, entity in ipairs(Entity.list) do
+    drawEntity(entity, layer_idx)
   end
+  -- Draw collision fixture shape's edges in debug mode
   if Args.get_arg('debug') then
-    for _, fixture in ipairs(map.fixtures) do
+    for _, fixture in ipairs(layer.objects) do
       local body = fixture:getBody()
       local shape = fixture:getShape()
       Love.graphics.setColor(255, 0, 0, 255)
       Love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
       Love.graphics.setColor(255, 255, 255, 255)
-      --Love.graphics.setColor(255, 255, 255, 255)
+    end
+  end
+end
+
+local draw_tiles = function(layer, map)
+  for i, tile in ipairs(layer.data) do
+    -- Skip unset tiles
+    if tile ~= 0 then
+      local tile_pos_x = map.tile_width * ((i - 1) % map.columns)
+      local tile_pos_y = map.tile_height * math.floor((i - 1) / map.rows)
+      Love.graphics.draw(
+        map.image,
+        map.quads[tile],
+        tile_pos_x,
+        tile_pos_y
+      )
+    end
+  end
+end
+
+local draw = function()
+  local map = active_map
+  for idx, layer in ipairs(map.layers) do
+    if layer.type == 'tiles' then
+      draw_tiles(layer, map)
+    else
+      draw_objects(layer, idx)
     end
   end
 end
@@ -95,37 +111,45 @@ local load = function(map_name)
     return quads
   end
 
-  local load_fixtures = function(map)
+  local spawn_fixture = function(object, layer_index)
+    local body = Love.physics.newBody(
+      World,
+      object.pos_x,
+      object.pos_y,
+      'static'
+    )
+    if object.rotation then
+      body:setAngle(object.rotation)
+    end
+    local shape
+    if object.points then
+      shape = Love.physics.newPolygonShape(object.points)
+    elseif object.width then
+      shape = Love.physics.newRectangleShape(
+        object.width / 2,
+        object.height / 2,
+        object.width,
+        object.height
+      )
+    end
+
+    if shape then
+      local fixture = Love.physics.newFixture(body, shape)
+      fixture:setGroupIndex(layer_index)
+      return fixture
+    end
+    return nil
+  end
+
+  local load_fixtures = function(layer, layer_idx)
     local fixtures = {}
-    -- Apply collision
-    for _, object_group in ipairs(map.object_groups) do
-      for _, object in ipairs(object_group) do
-        if object.name and object.type == 'entity' then
-          Entity.spawn(object.name, object)
-        else
-          local body = Love.physics.newBody(
-            World,
-            object.pos_x,
-            object.pos_y,
-            'static'
-          )
-          if object.rotation then
-            body:setAngle(object.rotation)
-          end
-          local shape
-          if object.points then
-            shape = Love.physics.newPolygonShape(object.points)
-          elseif object.width then
-            shape = Love.physics.newRectangleShape(
-              object.width / 2,
-              object.height / 2,
-              object.width,
-              object.height
-            )
-          end
-          if shape then
-            table.insert(fixtures, Love.physics.newFixture(body, shape))
-          end
+    for _, object in ipairs(layer.objects) do
+      if object.name and object.type == 'entity' then
+        Entity.spawn(object, layer_idx)
+      else
+        local collision_fixture = spawn_fixture(object, layer_idx)
+        if collision_fixture then
+          table.insert(fixtures, collision_fixture)
         end
       end
     end
@@ -143,7 +167,12 @@ local load = function(map_name)
   )
   active_map.image = load_image(active_map)
   active_map.quads = load_quads(active_map, active_map.image)
-  active_map.fixtures = load_fixtures(active_map)
+  for layer_idx, layer in ipairs(active_map.layers) do
+    -- Apply collision fixtures
+    if layer.type == 'objects' then
+      active_map.layers[layer_idx].objects = load_fixtures(layer, layer_idx)
+    end
+  end
 
   return active_map
 end

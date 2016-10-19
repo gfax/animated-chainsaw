@@ -6,6 +6,7 @@ describe('services/map', function()
   -- Mock Entity dependency
   before_each(function()
     local entity_mock = {
+      list = {},
       spawn = function() end
     }
     package.loaded['src/services/entity'] = entity_mock
@@ -76,6 +77,7 @@ describe('services/map', function()
             getShape = function()
               return shape
             end,
+            setGroupIndex = function() end,
             shape = shape
           }
         end,
@@ -147,7 +149,6 @@ describe('services/map', function()
                 width = '2'
               }
             },
-            object_groups = {},
             orientation = 'orthogonal',
             render_order = 'right-down',
             rows = 2,
@@ -183,24 +184,26 @@ describe('services/map', function()
         parse = function()
           return {
             columns = 2,
-            layers = {},
-            object_groups = {
+            layers = {
               {
-                {
-                  crazy = 'definitely',
-                  height = 32,
-                  name = 'lil grass box',
-                  pos_x = 32,
-                  pos_y = 32,
-                  type = 'cute',
-                  width = 32
+                objects = {
+                  {
+                    crazy = 'definitely',
+                    height = 32,
+                    name = 'lil grass box',
+                    pos_x = 32,
+                    pos_y = 32,
+                    type = 'cute',
+                    width = 32
+                  },
+                  {
+                    name = 'Triangle',
+                    points = { 0, 0, 96, 96, 0, 96 },
+                    pos_x = 608,
+                    pos_y = 128
+                  }
                 },
-                {
-                  name = 'Triangle',
-                  points = { 0, 0, 96, 96, 0, 96 },
-                  pos_x = 608,
-                  pos_y = 128
-                }
+                type = 'objects'
               }
             },
             orientation = 'orthogonal',
@@ -229,13 +232,18 @@ describe('services/map', function()
 
       local results = service.load('foo')
 
-      assert.equal(type(results.fixtures), 'table')
-      assert.equal(#results.fixtures, 2)
+      assert.equal(type(results.layers), 'table')
+      assert.equal(#results.layers, 1)
 
-      local fixture1 = results.fixtures[1]
+      local layer1 = results.layers[1]
+      assert.equal(type(layer1), 'table')
+      assert.equal(type(layer1.objects), 'table')
+      assert.equal(#layer1.objects, 2)
+
+      local fixture1 = layer1.objects[1]
       assert.equal(fixture1.body, 'body')
       assert.equal(fixture1.shape, 'rectangle')
-      local fixture2 = results.fixtures[2]
+      local fixture2 = layer1.objects[2]
       assert.equal(fixture2.body, 'body')
       assert.equal(fixture2.shape, 'polygon')
 
@@ -244,6 +252,8 @@ describe('services/map', function()
       assert.spy(Love.physics.newPolygonShape).called_with({ 0, 0, 96, 96, 0, 96 })
       assert.spy(Love.physics.newRectangleShape).called(1)
       assert.spy(Love.physics.newRectangleShape).called_with(16, 16, 32, 32)
+
+      package.loaded['src/services/entity'] = nil
     end)
   end)
 
@@ -264,10 +274,10 @@ describe('services/map', function()
                 height = '2',
                 pos_x = 0,
                 pos_y = 0,
+                type = 'tiles',
                 width = '2'
               }
             },
-            object_groups = {},
             orientation = 'orthogonal',
             render_order = 'right-down',
             rows = 2,
@@ -333,24 +343,26 @@ describe('services/map', function()
         parse = function()
           return {
             columns = 2,
-            layers = {},
-            object_groups = {
+            layers = {
               {
-                {
-                  crazy = 'definitely',
-                  height = 32,
-                  name = 'lil grass box',
-                  pos_x = 32,
-                  pos_y = 32,
-                  type = 'cute',
-                  width = 32
+                objects = {
+                  {
+                    crazy = 'definitely',
+                    height = 32,
+                    name = 'lil grass box',
+                    pos_x = 32,
+                    pos_y = 32,
+                    type = 'cute',
+                    width = 32
+                  },
+                  {
+                    name = 'Triangle',
+                    points = { 0, 0, 96, 96, 0, 96 },
+                    pos_x = 608,
+                    pos_y = 128
+                  }
                 },
-                {
-                  name = 'Triangle',
-                  points = { 0, 0, 96, 96, 0, 96 },
-                  pos_x = 608,
-                  pos_y = 128
-                }
+                type = 'objects'
               }
             },
             orientation = 'orthogonal',

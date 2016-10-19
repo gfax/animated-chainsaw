@@ -10,7 +10,6 @@ local Map = require 'src/services/map'
 local World = require 'src/services/world'
 
 -- Systems
-local DrawEntity = require 'src/systems/draw-entity'
 local UpdateCamera = require 'src/systems/update-camera'
 local UpdateEntityAnimation = require 'src/systems/update-entity-animation'
 local UpdatePlayerVelocity = require 'src/systems/update-player-velocity'
@@ -29,9 +28,6 @@ end
 function Love.draw()
   Camera.set()
   Map.draw()
-  for _, entity in ipairs(Entity.list) do
-    DrawEntity(entity)
-  end
   Camera.unset()
 end
 

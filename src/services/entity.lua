@@ -23,16 +23,16 @@ end
 local entity_configs = get_entity_configs(entity_directory)
 local entities = {}
 
-local spawn = function(name, object)
-  local entity_config = entity_configs[name]
+local spawn = function(object, layer_index)
+  local entity_config = entity_configs[object.name]
   assert(
     entity_config ~= nil,
-    'Map entity reference "' .. name .. '" not found.'
+    'Map entity reference "' .. object.name .. '" not found.'
   )
   local entity = Util.copy(entity_config)
   RegisterBody(entity, object.pos_x, object.pos_y)
   RegisterShape(entity)
-  RegisterFixture(entity)
+  RegisterFixture(entity, layer_index)
   RegisterSprites(entity)
   RegisterInputActions(entity)
   entity.current_action = 'default'
