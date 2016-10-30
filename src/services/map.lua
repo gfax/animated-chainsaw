@@ -61,8 +61,8 @@ local draw_tiles = function(layer, map)
       local tile_pos_x = map.tile_width * ((i - 1) % map.columns)
       local tile_pos_y = map.tile_height * math.floor((i - 1) / map.rows)
       Love.graphics.draw(
-        map.image,
-        map.quads[tile],
+        map.quads[tile].image,
+        map.quads[tile].quad,
         tile_pos_x,
         tile_pos_y
       )
@@ -82,32 +82,36 @@ local draw = function()
 end
 
 local load = function(map_name)
-  local load_image = function(map)
-    local path = map.tileset.source
-    return Love.graphics.newImage(path)
-  end
-
-  local load_quads = function(map, image)
+  local load_quads = function(map)
     local quads = {}
-    local row_count = map.tileset.tile_count / map.tileset.columns
-    local image_width = image:getWidth()
-    local image_height = image:getHeight()
-    local quad_idx = 1
-    for row = 1, row_count do
-      for column = 1, map.tileset.columns do
-        local tile_x = map.tile_width * (column - 1)
-        local tile_y = map.tile_height * (row - 1)
-        quads[quad_idx] = Love.graphics.newQuad(
-          tile_x,
-          tile_y,
-          map.tile_width,
-          map.tile_height,
-          image_width,
-          image_height
-        )
-        quad_idx = quad_idx + 1
+
+    for _, tileset in ipairs(map.tilesets) do
+      local image = Love.graphics.newImage(tileset.source)
+      local image_width = image:getWidth()
+      local image_height = image:getHeight()
+      local quad_idx = tileset.first_gid
+      local row_count = tileset.tile_count / tileset.columns
+      for row = 1, row_count do
+        for column = 1, tileset.columns do
+          local tile_x = map.tile_width * (column - 1)
+          local tile_y = map.tile_height * (row - 1)
+          local quad = Love.graphics.newQuad(
+            tile_x,
+            tile_y,
+            map.tile_width,
+            map.tile_height,
+            image_width,
+            image_height
+          )
+          quads[quad_idx] = {
+            image = image,
+            quad = quad
+          }
+          quad_idx = quad_idx + 1
+        end
       end
     end
+
     return quads
   end
 
@@ -160,13 +164,21 @@ local load = function(map_name)
     type(map_name) == 'string',
     'Expected map_name string parameter. Got "' .. type(map_name) .. '".'
   )
-  active_map = Util.copy(maps[map_name])
   assert(
     maps[map_name] ~= nil,
     'Could not find indexed map "' .. map_name .. '".'
   )
-  active_map.image = load_image(active_map)
-  active_map.quads = load_quads(active_map, active_map.image)
+
+  active_map = Util.copy(maps[map_name])
+
+  assert(
+    active_map.render_order == 'right-down',
+    'Only "right-down" map render order supported, but found order set to "' ..
+    active_map.render_order .. '" ' .. 'for map "' .. map_name .. '".'
+  )
+
+  active_map.quads = load_quads(active_map)
+
   for layer_idx, layer in ipairs(active_map.layers) do
     -- Apply collision fixtures
     if layer.type == 'objects' then
@@ -182,7 +194,6 @@ local unload = function(map_name)
     maps[map_name] ~= nil,
     'Could not find indexed map "' .. map_name .. '".'
   )
-  maps[map_name].image = nil
   maps[map_name].quads = nil
 end
 

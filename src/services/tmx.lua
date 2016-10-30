@@ -32,20 +32,24 @@ local Util = require 'src/services/util'
 --   rows = 2,
 --   tile_height = 32,
 --   tile_width = 32,
---   tileset = {
---     columns = 16,
---     source = "img/general.png",
---     tile_count = 256,
---     tile_height = 32,
---     tile_width = 32,
---     transparency = "ffffff"
+--   tilesets = {
+--     {
+--       columns = 16,
+--       first_gid = 1,
+--       source = "img/general.png",
+--       tile_count = 256,
+--       tile_height = 32,
+--       tile_width = 32,
+--       transparency = "ffffff"
+--     },
+--     { ... }
 --   }
 -- }
 
-local parse_layer_data_xml = function(tileset)
+local parse_layer_data_xml = function(tiles)
   local parsed_table = {}
-  for i = 1, #tileset do
-    table.insert(parsed_table, tonumber(tileset[i].xarg.gid))
+  for i = 1, #tiles do
+    table.insert(parsed_table, tonumber(tiles[i].xarg.gid))
   end
   return parsed_table
 end
@@ -186,6 +190,10 @@ local parse_tileset = function(raw_tileset_data, error_suffix)
     'Expected a defined set of tileset columns. Got nil' .. error_suffix
   )
   assert(
+    raw_tileset_data.xarg.firstgid ~= nil,
+    'Expected tileset to define first gid. Got nil' .. error_suffix
+  )
+  assert(
     raw_tileset_data.xarg.tilecount ~= nil,
     'Expected a total tile count for the given tileset. Got nil' .. error_suffix
   )
@@ -194,6 +202,7 @@ local parse_tileset = function(raw_tileset_data, error_suffix)
   end
   formatted_tileset.source = raw_tileset_data[1].xarg.source:gsub('%.%./', '')
   formatted_tileset.columns = tonumber(raw_tileset_data.xarg.columns)
+  formatted_tileset.first_gid = tonumber(raw_tileset_data.xarg.firstgid)
   formatted_tileset.tile_count = tonumber(raw_tileset_data.xarg.tilecount)
   formatted_tileset.tile_height = tonumber(raw_tileset_data.xarg.tileheight)
   formatted_tileset.tile_width = tonumber(raw_tileset_data.xarg.tilewidth)
@@ -205,7 +214,8 @@ end
 local parse = function(file_name, raw_file_content)
   -- This will be our map's final table:
   local parsed_map = {
-    layers = {}
+    layers = {},
+    tilesets = {}
   }
   -- We get an array of elements, but only need the map element
   local parsed_xml = Xml.parse(raw_file_content)[2]
@@ -240,7 +250,7 @@ local parse = function(file_name, raw_file_content)
       --local parsed_object_group = parse_object_layer(element)
       --Util.push(parsed_map.layers, parsed_object_group)
     elseif element.label == 'tileset' then
-      parsed_map.tileset = parse_tileset(element, error_suffix)
+      table.insert(parsed_map.tilesets, parse_tileset(element, error_suffix))
     end
   end
   assert(

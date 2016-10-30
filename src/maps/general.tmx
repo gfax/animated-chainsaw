@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="147">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" nextobjectid="150">
  <tileset firstgid="1" name="general" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="../../img/general.png" trans="ffffff" width="512" height="512"/>
   <terraintypes>
@@ -31,6 +31,9 @@
   <tile id="193" terrain="0,0,2,2"/>
   <tile id="194" terrain="0,2,2,2"/>
  </tileset>
+ <tileset firstgid="257" name="castle" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+  <image source="../../img/castle.png" trans="ffffff" width="512" height="512"/>
+ </tileset>
  <layer name="ground" width="100" height="100">
   <data encoding="base64" compression="zlib">
    eJzt1eFNAjEYBuBTJlAn0BWYwFFVFgAnUCZAFrLEkjSX3h0HreGO58cTEtI05H2/j66aplkBAAAAABT0FrxHH4XuKXHfrVoHd8F9sDgzw0MXmw46Gd/HQ/AYPMUMx8x5Xxc6KdNHTrujo6EudFKnj0t99vyG3NvTZ87dHvtYVu6jb0fWBe+aunQ/Xpu/d720xUCOX2f00bdvU5b2sYyfqVO+y51JtXtud7Jrxu/InPt4Dl7+US7LoR3ZxjPf0fYKsqvVR80349TZ3rXyTh2y38czP9H+CrKbSx9d70iad2qu2ed0zWRtc/2/uVTXTNZ2SzMPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFP3C9Pc6Yc=
@@ -48,7 +51,7 @@
  </layer>
  <layer name="items" width="100" height="100">
   <data encoding="base64" compression="zlib">
-   eJztzskJgFAAQ0Hr1w4UlwZcGrEh8WAONiAIX2QG3jGQqgIAAPiuvfQBAAAAgB/r05DGND3c1qm54x1zWtKatofbNnV3lHOmo/QJAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXnEBu4cLaA==
+   eJztzssJg1AARFHTukvtIOKngZg0koaCC2fxClAQnoRz4C4HpmkAAADu61v7AAAAAMAfG9OU5rSk9nF826W+xDVeaU3v9Dm5faahRD1b+tU+AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwCV2OVUL6w==
   </data>
  </layer>
  <layer name="items" width="100" height="100">
@@ -145,6 +148,7 @@
   <object id="146" x="1520" y="616">
    <polygon points="0,0 8,-8 0,8"/>
   </object>
+  <object id="149" x="1157" y="613" width="21" height="21"/>
  </objectgroup>
  <layer name="above ground" width="100" height="100">
   <data encoding="base64" compression="zlib">

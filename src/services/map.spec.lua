@@ -154,13 +154,16 @@ describe('services/map', function()
             rows = 2,
             tile_height = 32,
             tile_width = 32,
-            tileset = {
-              columns = 16,
-              source = 'img/general.png',
-              tile_count = 256,
-              tile_height = 32,
-              tile_width = 32,
-              transparency = 'ffffff'
+            tilesets = {
+              {
+                columns = 16,
+                first_gid = 1,
+                source = 'img/general.png',
+                tile_count = 256,
+                tile_height = 32,
+                tile_width = 32,
+                transparency = 'ffffff'
+              }
             }
           }
         end
@@ -173,7 +176,6 @@ describe('services/map', function()
       local results = service.load('foo')
 
       assert.equal(results.columns, 2)
-      assert.equal(type(results.image), 'table')
       assert.equal(#results.quads, 256)
 
       assert.spy(Love.graphics.newQuad).called(256)
@@ -211,8 +213,9 @@ describe('services/map', function()
             rows = 2,
             tile_height = 32,
             tile_width = 32,
-            tileset = {
+            tilesets = {
               columns = 1,
+              first_gid = 1,
               source = 'img/general.png',
               tile_count = 1,
               tile_height = 1,
@@ -283,13 +286,16 @@ describe('services/map', function()
             rows = 2,
             tile_height = 32,
             tile_width = 32,
-            tileset = {
-              columns = 16,
-              source = 'img/general.png',
-              tile_count = 256,
-              tile_height = 32,
-              tile_width = 32,
-              transparency = 'ffffff'
+            tilesets = {
+              {
+                columns = 16,
+                first_gid = 1,
+                source = 'img/general.png',
+                tile_count = 256,
+                tile_height = 32,
+                tile_width = 32,
+                transparency = 'ffffff'
+              }
             }
           }
         end
@@ -370,8 +376,9 @@ describe('services/map', function()
             rows = 2,
             tile_height = 32,
             tile_width = 32,
-            tileset = {
+            tilesets = {
               columns = 16,
+              first_gid = 1,
               source = 'img/general.png',
               tile_count = 256,
               tile_height = 32,
