@@ -85,7 +85,7 @@
   <object id="59" type="collision" x="1072" y="387" width="256" height="32" rotation="45"/>
   <object id="61" type="collision" x="1212" y="555" width="105" height="34" rotation="45"/>
   <object id="62" type="collision" x="1186" y="547" width="32" height="32"/>
-  <object id="63" type="collision" x="1248" y="621" width="128" height="32"/>
+  <object id="63" type="collision" x="1263" y="621" width="113" height="32"/>
   <object id="64" type="collision" x="1760" y="543" width="32" height="96" rotation="-45"/>
   <object id="65" type="collision" x="906" y="391" width="32" height="138" rotation="45"/>
   <object id="76" type="collision" x="1024" y="588" width="128" height="54"/>

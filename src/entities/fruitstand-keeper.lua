@@ -1,12 +1,13 @@
 return {
   body = {
-    fixed_rotation = false,
+    fixed_rotation = true,
     type = 'dynamic'
   },
   fixture = {
-    friction = 0,
+    friction = 0.2,
     restitution = 2
   },
+  max_speed = 200,
   shape = {
     height = 32,
     offset_x = 32,

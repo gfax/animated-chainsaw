@@ -27,7 +27,7 @@ return {
     right = 'move-right',
     up = 'move-up'
   },
-  max_speed = 100,
+  max_speed = 120,
   player_id = 1,
   shape = {
     height = 32,
