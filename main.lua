@@ -32,6 +32,20 @@ function Love.draw()
   Camera.unset()
 end
 
+-- Gamepad/Joystick dpad button press event
+-- joystick (joystick table) https://love2d.org/wiki/Joystick
+-- button (string)
+function Love.gamepadpressed(_, button)
+  Input.call_key_press(button)
+end
+
+-- Gamepad/Joystick dpad button release event
+-- joystick (joystick table) https://love2d.org/wiki/Joystick
+-- button (string)
+function Love.gamepadreleased(_, button)
+  Input.call_key_release(button)
+end
+
 -- All active callbacks for pressing a key
 -- pressedKey (string)
 function Love.keypressed(pressed_key)

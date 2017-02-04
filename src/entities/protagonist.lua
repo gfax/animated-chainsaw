@@ -22,6 +22,10 @@ return {
     friction = 0
   },
   input_actions = {
+    dpdown = 'move-down',
+    dpleft = 'move-left',
+    dpright = 'move-right',
+    dpup = 'move-up',
     down = 'move-down',
     left = 'move-left',
     right = 'move-right',
