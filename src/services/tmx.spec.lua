@@ -32,7 +32,43 @@ describe('services/tmx', function()
       assert.equal(type(Tmx.parse), 'function')
     end)
 
-    it('should parse maps with xml-format tilesets', function()
+    it('should parse tilesets', function()
+      local test_tmx = [[
+        <?xml version="1.0" encoding="UTF-8"?>
+        <map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="1">
+          <tileset firstgid="1" name="general" tilewidth="32" tileheight="32" tilecount="256" columns="16">
+            <image source="../../img/general.png" trans="ffffff" width="512" height="512"/>
+          </tileset>
+          <tileset firstgid="257" name="countryside" tilewidth="24" tileheight="24" tilecount="4" columns="2">
+            <image source="../../img/countryside.png" trans="000000" width="64" height="64"/>
+          </tileset>
+        </map>
+      ]]
+
+      local results = Tmx.parse('foo', test_tmx)
+      assert.equal(results.columns, 2)
+
+      assert.equal(type(results.tilesets), 'table')
+      assert.equal(#results.tilesets, 2)
+
+      local tileset1 = results.tilesets[1]
+      assert.equal(tileset1.columns, 16)
+      assert.equal(tileset1.source, 'img/general.png')
+      assert.equal(tileset1.tile_count, 256)
+      assert.equal(tileset1.tile_height, 32)
+      assert.equal(tileset1.tile_width, 32)
+      assert.equal(tileset1.transparency, 'ffffff')
+
+      local tileset2 = results.tilesets[2]
+      assert.equal(tileset2.columns, 2)
+      assert.equal(tileset2.source, 'img/countryside.png')
+      assert.equal(tileset2.tile_count, 4)
+      assert.equal(tileset2.tile_height, 24)
+      assert.equal(tileset2.tile_width, 24)
+      assert.equal(tileset2.transparency, '000000')
+    end)
+
+    it('should parse xml-format tile layers', function()
       local test_tmx = [[
         <?xml version="1.0" encoding="UTF-8"?>
         <map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="1">
@@ -77,7 +113,7 @@ describe('services/tmx', function()
       assert.equal(tileset.transparency, 'ffffff')
     end)
 
-    it('should parse maps with csv-format tilesets', function()
+    it('should parse csv-format tile layers', function()
       local test_tmx = [[
         <?xml version="1.0" encoding="UTF-8"?>
         <map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="1">
@@ -120,7 +156,7 @@ describe('services/tmx', function()
       assert.equal(tileset.transparency, 'ffffff')
     end)
 
-    it('should parse gzip-compressed tilesets', function()
+    it('should parse gzip-compressed tile layers', function()
       local test_tmx = [[
         <?xml version="1.0" encoding="UTF-8"?>
         <map version="1.0" orientation="orthogonal" renderorder="right-down" width="2" height="2" tilewidth="32" tileheight="32" nextobjectid="2">
@@ -162,7 +198,7 @@ describe('services/tmx', function()
       assert.equal(tileset.transparency, 'ffffff')
     end)
 
-    it('should parse zlib-compressed tilesets', function()
+    it('should parse zlib-compressed tile layers', function()
       local love_mock = {
         math = {
           decompress = function()

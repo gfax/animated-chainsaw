@@ -4,7 +4,7 @@ MAINTAINER Jay Thomas <jay@gfax.ch>
 ## Build additional system packages
 RUN apk update && \
     apk upgrade && \
-    # luacov
+    # luacov dependency
     apk add python && \
     rm -rf /var/cache/apk/*
 
